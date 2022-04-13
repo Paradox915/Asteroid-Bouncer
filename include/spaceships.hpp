@@ -5,26 +5,37 @@ Hugh Smith
 #pragma once
 #include <cmath>
 
+#include "entity.hpp"
 
-class ship
+class Ship : public Entity
 {
 public:
   // The ship class that every thing inherants from
-  float pos[2]; // The position x, y
-  float velosity[2]; // The the speed and rotation in radians
+  float magnitude; // The the speed
+  // rotation in radians
+  float rotation;
   int health; // The health
   
-  float * move(float velosity[2], float pos[2])
+  float move(float magnitude, float rotation, float x, float y)
   {
       // move the obj
-      float horizontal = velosity[0] * cos(velosity[1]);
-      float vertical = velosity[0] * sin(velosity[1]);
+      float horizontal = magnitude * cos(rotation);
+      float vertical = magnitude * sin(rotation);
 
-      float new_horizontal = horizontal + pos[0];
-      float new_vertical = vertical + pos[1];
+      float new_x = horizontal + x;
+      float new_y = vertical + y;
 
-      float new_pos[2] = {new_horizontal, new_vertical};
+      return (new_x, new_y);
+  }
 
-      return new_pos;
+  // constructor
+  Ship(float x_input, float y_input, std::string texture_input, float magnitude_input, float rotation_input, float health_input)
+  {
+    x = x_input;
+    y = y_input;
+    texture = texture_input;
+    magnitude = magnitude_input;
+    rotation = rotation_input;
+    health = health_input;
   }
 };
