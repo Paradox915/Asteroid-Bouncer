@@ -20,6 +20,10 @@ using namespace std;
 int WIDTH = 900;
 int HEIGHT = 900;
 
+
+SDL_Window* window = NULL;
+SDL_Renderer* renderer = NULL;
+
 // functions
 bool init_sdl()
 {
@@ -32,8 +36,6 @@ bool init_sdl()
 		result = false;
 	}
 
-	SDL_Window* window;
-	SDL_Renderer* renderer;
 
 	window = SDL_CreateWindow("Asteroid Bouncer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
 
@@ -57,8 +59,6 @@ bool init_sdl()
 void stop_sdl()
 {
 	/*Function to stop SDL*/
-	SDL_Window* window;
-	SDL_Renderer* renderer;
 
 	// destroy renderer 
 	SDL_DestroyRenderer(renderer); 
@@ -106,8 +106,6 @@ void game_loop()
 void render()
 {
 	/*render stuf to the screen*/
-	SDL_Window* window;
-	SDL_Renderer* renderer;
 	// creates a surface to load an image into the main memory 
 	SDL_Surface* surface; 
 
