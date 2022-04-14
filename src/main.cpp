@@ -147,15 +147,14 @@ void render()
 int main(int argc, char* args[])
 {
 	bool gameRunning = init_sdl();
-	while(gameRunning)
+	while(gameRunning == true)
 	{
 		// The main game loop
 		input();
 		game_loop();
 		render();
-		//check if exit
+		// check if exit
 		gameRunning = check_exit();
-		SDL_Delay(1000 / 60);
 	}
 	stop_sdl();
 	return 0;
