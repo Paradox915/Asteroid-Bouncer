@@ -9,17 +9,17 @@ Hugh Smith
 #include <iostream>
 #include <SDL2/SDL_timer.h> 
 
+//#include "../Asteroid-Bouncer/sprites/ship.png"
 // bad parctice but im doing it anyway
 using namespace std;
 
 // includes - header files
 // #include "../include/spaceships.hpp"
-// #include "../include/entity.hpp"
+#include "../include/entity.hpp"
 
 // constants
 int WIDTH = 900;
 int HEIGHT = 900;
-
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -103,14 +103,14 @@ void game_loop()
 	/*the core game loop*/
 }
 
-void render()
+void render(Entity ent)
 {
 	/*render stuf to the screen*/
 	// creates a surface to load an image into the main memory 
 	SDL_Surface* surface; 
 
 	// please provide a path for your image 
-	surface = IMG_Load("../sprites/ship.png"); 
+	surface = IMG_Load(ent.texture); 
 
 	// loads image to our graphics hardware memory. 
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surface); 
@@ -126,33 +126,42 @@ void render()
 	SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h); 
 
 	// adjust height and width of our image box. 
-	dest.w /= 6; 
-	dest.h /= 6; 
-
+	dest.w *= 6; 
+	dest.h *= 6; 
 	// sets initial x-position of object 
 	dest.x = (1000 - dest.w) / 2; 
 
 	// sets initial y-position of object 
 	dest.y = (1000 - dest.h) / 2; 
 
+	dest.x += ent.x;
+	dest.y += ent.y;
 	// clears the screen 
 	SDL_RenderClear(renderer); 
-	SDL_RenderCopy(renderer, tex, NULL, &dest); 
+	SDL_RenderCopyEx(renderer, tex, NULL, &dest, ent.rotation, NULL, SDL_FLIP_NONE); 
 
 	// triggers the double buffers 
 	// for multiple rendering 
 	SDL_RenderPresent(renderer); 
 }
 
+void render_objects(Entity objects_to_render[])
+{
+	/*render all objects in list*/
+	
+}
+
 int main(int argc, char* args[])
 {
+	Entity player(300,4,90,"sprites/ship.png");
+
 	bool gameRunning = init_sdl();
 	while(gameRunning == true)
 	{
 		// The main game loop
 		input();
 		game_loop();
-		render();
+		render(player);
 		// check if exit
 		gameRunning = check_exit();
 	}
