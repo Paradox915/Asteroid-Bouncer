@@ -12,15 +12,15 @@ class Ship : public Entity
 public:
   // The ship class that every thing inherants from
   float magnitude; // The the speed
-  // rotation in radians
-  float rotation;
+  // direction in radians
+  float direction;
   int health; // The health
   
-  float move(float magnitude, float rotation, float x, float y)
+  float move(float magnitude, float direction, float x, float y)
   {
       // move the obj
-      float horizontal = magnitude * cos(rotation);
-      float vertical = magnitude * sin(rotation);
+      float horizontal = magnitude * cos(direction);
+      float vertical = magnitude * sin(direction);
 
       float new_x = horizontal + x;
       float new_y = vertical + y;
@@ -35,7 +35,7 @@ public:
     y = y_input;
     texture = texture_input;
     magnitude = magnitude_input;
-    rotation = rotation_input;
+    direction = rotation_input;
     health = health_input;
   }
 };
