@@ -23,7 +23,7 @@ int HEIGHT = 900;
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
-
+const Uint8* kb;
 // functions
 bool init_sdl()
 {
@@ -84,20 +84,6 @@ bool check_exit()
 	return true;
 }
 
-void input()
-{
-	/*get any inputs from the user*/
-	SDL_Event event;
-	while (SDL_PollEvent(&event))
-	{ 
-		switch (event.type){ 
-		case SDL_KEYDOWN: 
-			// keyboard API for key pressed 
-			cout << event.key.keysym.scancode;
-		}
-	}
-}
-
 void game_loop()
 {
 	/*the core game loop*/
@@ -129,10 +115,10 @@ void render(Entity ent)
 	dest.w *= 6; 
 	dest.h *= 6; 
 	// sets initial x-position of object 
-	dest.x = (1000 - dest.w) / 2; 
+	dest.x = (0 - dest.w) / 2; 
 
 	// sets initial y-position of object 
-	dest.y = (1000 - dest.h) / 2; 
+	dest.y = (0 - dest.h) / 2; 
 
 	dest.x += ent.x;
 	dest.y += ent.y;
@@ -145,26 +131,56 @@ void render(Entity ent)
 	SDL_RenderPresent(renderer); 
 }
 
-void render_objects(Entity objects_to_render[])
+void render_objects(Entity objects_to_render[], int lengnth)
 {
 	/*render all objects in list*/
+	for(int i = 0;  i < lengnth; i ++)
+	{
+		render(objects_to_render[i]);
+	}
 	
 }
 
 int main(int argc, char* args[])
 {
-	Entity player(300,4,90,"sprites/ship.png");
-
+	Entity player(900/2,900/2,90,"sprites/ship.png");
+	Entity players[1] = {player};
+	int legnth = sizeof(players)/sizeof(players[0]);
 	bool gameRunning = init_sdl();
 	while(gameRunning == true)
 	{
 		// The main game loop
-		input();
+		Uint64 frame_start = SDL_GetPerformanceCounter();
+
+		Entity players[1] = {player};
+		int legnth = sizeof(players)/sizeof(players[0]);
+
+		// /*get any inputs from the user and return them as a list*/
+		kb = SDL_GetKeyboardState(NULL);
+		if(kb[SDL_SCANCODE_SPACE])
+			cout << "space";
+		if(kb[SDL_SCANCODE_DOWN])
+			player.y += 1;
+		if(kb[SDL_SCANCODE_UP])
+			player.y -= 1;
+		if(kb[SDL_SCANCODE_LEFT])
+			player.rotation -= 1;
+		if(kb[SDL_SCANCODE_RIGHT])
+			player.rotation += 1;
+		
 		game_loop();
-		render(player);
+		render_objects(players, legnth);
 		// check if exit
 		gameRunning = check_exit();
+
+		Uint64 frame_end = SDL_GetPerformanceCounter();
+
+		float elapsedMS = (frame_end - frame_start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+
+		// Cap to 60 FPS
+		SDL_Delay(floor(16.666f - elapsedMS));
 	}
+	
 	stop_sdl();
 	return 0;
 }
