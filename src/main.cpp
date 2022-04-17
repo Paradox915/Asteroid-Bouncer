@@ -9,12 +9,11 @@ Hugh Smith
 #include <iostream>
 #include <SDL2/SDL_timer.h> 
 
-//#include "../Asteroid-Bouncer/sprites/ship.png"
 // bad parctice but im doing it anyway
 using namespace std;
 
 // includes - header files
-// #include "../include/spaceships.hpp"
+#include "../include/spaceships.hpp"
 #include "../include/entity.hpp"
 
 // constants
@@ -122,8 +121,6 @@ void render(Entity ent)
 
 	dest.x += ent.x;
 	dest.y += ent.y;
-	// clears the screen 
-	SDL_RenderClear(renderer); 
 	SDL_RenderCopyEx(renderer, tex, NULL, &dest, ent.rotation, NULL, SDL_FLIP_NONE); 
 
 	// triggers the double buffers 
@@ -134,6 +131,8 @@ void render(Entity ent)
 void render_objects(Entity objects_to_render[], int lengnth)
 {
 	/*render all objects in list*/
+	// clears the screen 
+	SDL_RenderClear(renderer); 
 	for(int i = 0;  i < lengnth; i ++)
 	{
 		render(objects_to_render[i]);
@@ -144,17 +143,16 @@ void render_objects(Entity objects_to_render[], int lengnth)
 int main(int argc, char* args[])
 {
 	Entity player(900/2,900/2,90,"sprites/ship.png");
-	Entity players[1] = {player};
-	int legnth = sizeof(players)/sizeof(players[0]);
+	Entity fd(900/3,900/3,80,"sprites/ship.png");
+	Ship test_ship(900/3,900/3, "sprites/ship.png", 1, 90, 10);
 	bool gameRunning = init_sdl();
 	while(gameRunning == true)
 	{
 		// The main game loop
 		Uint64 frame_start = SDL_GetPerformanceCounter();
-
-		Entity players[1] = {player};
+		test_ship.move();
+		Entity players[2] = {player, test_ship.get_entity()};
 		int legnth = sizeof(players)/sizeof(players[0]);
-
 		// /*get any inputs from the user and return them as a list*/
 		kb = SDL_GetKeyboardState(NULL);
 		if(kb[SDL_SCANCODE_SPACE])
@@ -164,10 +162,10 @@ int main(int argc, char* args[])
 		if(kb[SDL_SCANCODE_UP])
 			player.y -= 1;
 		if(kb[SDL_SCANCODE_LEFT])
-			player.rotation -= 1;
+			test_ship.direction -= 1;
 		if(kb[SDL_SCANCODE_RIGHT])
-			player.rotation += 1;
-		
+			test_ship.direction += 1;
+		cout << test_ship.direction<<"\n";
 		game_loop();
 		render_objects(players, legnth);
 		// check if exit
@@ -176,11 +174,10 @@ int main(int argc, char* args[])
 		Uint64 frame_end = SDL_GetPerformanceCounter();
 
 		float elapsedMS = (frame_end - frame_start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
-
+		
 		// Cap to 60 FPS
 		SDL_Delay(floor(16.666f - elapsedMS));
 	}
-	
 	stop_sdl();
 	return 0;
 }
