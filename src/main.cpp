@@ -15,13 +15,18 @@ using namespace std;
 // includes - header files
 #include "../include/spaceships.hpp"
 #include "../include/entity.hpp"
+#include "../include/player.hpp"
 
 // constants
-int WIDTH = 900;
-int HEIGHT = 900;
+int WIDTH = 1920;
+int HEIGHT = 1080;
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
+
+SDL_Surface* surface = NULL; 
+SDL_Texture* tex = NULL;
+
 const Uint8* kb;
 // functions
 bool init_sdl()
@@ -91,14 +96,11 @@ void game_loop()
 void render(Entity ent)
 {
 	/*render stuf to the screen*/
-	// creates a surface to load an image into the main memory 
-	SDL_Surface* surface; 
 
-	// please provide a path for your image 
 	surface = IMG_Load(ent.texture); 
 
 	// loads image to our graphics hardware memory. 
-	SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surface); 
+	tex = SDL_CreateTextureFromSurface(renderer, surface); 
 
 	// clears main-memory 
 	SDL_FreeSurface(surface); 
@@ -137,35 +139,38 @@ void render_objects(Entity objects_to_render[], int lengnth)
 	{
 		render(objects_to_render[i]);
 	}
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderDrawLine(renderer,1,1,900,900);
 	
 }
 
 int main(int argc, char* args[])
 {
-	Entity player(900/2,900/2,90,"sprites/ship.png");
 	Entity fd(900/3,900/3,80,"sprites/ship.png");
-	Ship test_ship(900/3,900/3, "sprites/ship.png", 1, 90, 10);
+	Ship test_ship(900/3,900/3, "sprites/enemy.png", 1, 90, 10);
+	Player player_1(0,0,"sprites/ship.png",0,100, 15, 1);
 	bool gameRunning = init_sdl();
 	while(gameRunning == true)
 	{
 		// The main game loop
 		Uint64 frame_start = SDL_GetPerformanceCounter();
 		test_ship.move();
-		Entity players[2] = {player, test_ship.get_entity()};
+		player_1.move();
+		Entity players[3] = {player_1.get_entity(), test_ship.get_entity(), fd};
 		int legnth = sizeof(players)/sizeof(players[0]);
 		// /*get any inputs from the user and return them as a list*/
+		SDL_PumpEvents();
 		kb = SDL_GetKeyboardState(NULL);
 		if(kb[SDL_SCANCODE_SPACE])
 			cout << "space";
 		if(kb[SDL_SCANCODE_DOWN])
-			player.y += 1;
+			player_1.accelerate(-1);
 		if(kb[SDL_SCANCODE_UP])
-			player.y -= 1;
+			player_1.accelerate(1);
 		if(kb[SDL_SCANCODE_LEFT])
-			test_ship.direction -= 1;
+			player_1.rotation -= 1;
 		if(kb[SDL_SCANCODE_RIGHT])
-			test_ship.direction += 1;
-		cout << test_ship.direction<<"\n";
+			player_1.rotation += 1;
 		game_loop();
 		render_objects(players, legnth);
 		// check if exit
@@ -175,6 +180,7 @@ int main(int argc, char* args[])
 
 		float elapsedMS = (frame_end - frame_start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 		
+
 		// Cap to 60 FPS
 		SDL_Delay(floor(16.666f - elapsedMS));
 	}
