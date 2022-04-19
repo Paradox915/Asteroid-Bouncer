@@ -8,7 +8,7 @@ Hugh Smith
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <SDL2/SDL_timer.h> 
-
+#include <noise/noise.h>
 // bad parctice but im doing it anyway
 using namespace std;
 
@@ -18,14 +18,22 @@ using namespace std;
 #include "../include/player.hpp"
 
 // constants
-int WIDTH = 1920;
-int HEIGHT = 1080;
+int WIDTH = 900;
+int HEIGHT = 900;
+
+Uint64 frame_now = SDL_GetPerformanceCounter();
+Uint64 frame_last = 0;
+double delta_time = 0;
+
+Player player(0,0,"sprites/ship.png",0,100, 5, 1);
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
 SDL_Surface* surface = NULL; 
 SDL_Texture* tex = NULL;
+
+SDL_Surface* back_ground = IMG_Load("sprites/background.png");
 
 const Uint8* kb;
 // functions
@@ -121,13 +129,13 @@ void render(Entity ent)
 	// sets initial y-position of object 
 	dest.y = (0 - dest.h) / 2; 
 
-	dest.x += ent.x;
-	dest.y += ent.y;
+	int new_x = WIDTH/2 + (player.x - ent.x);
+	int new_y = HEIGHT/2 + (player.y - ent.y);
+	dest.x += new_x;
+	dest.y += new_y;
+	//cout <<ent.x<<"-"<<ent.y<<" -- "<<dest.x<<"-"<<dest.y <<"\n";
 	SDL_RenderCopyEx(renderer, tex, NULL, &dest, ent.rotation, NULL, SDL_FLIP_NONE); 
-
-	// triggers the double buffers 
-	// for multiple rendering 
-	SDL_RenderPresent(renderer); 
+	 
 }
 
 void render_objects(Entity objects_to_render[], int lengnth)
@@ -139,50 +147,50 @@ void render_objects(Entity objects_to_render[], int lengnth)
 	{
 		render(objects_to_render[i]);
 	}
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderDrawLine(renderer,1,1,900,900);
-	
+	// for multiple rendering 
+	SDL_RenderPresent(renderer);
 }
 
 int main(int argc, char* args[])
 {
-	Entity fd(900/3,900/3,80,"sprites/ship.png");
-	Ship test_ship(900/3,900/3, "sprites/enemy.png", 1, 90, 10);
-	Player player_1(0,0,"sprites/ship.png",0,100, 15, 1);
+
+	noise::module::Perlin perlin;
+	perlin.SetSeed(1);
+	double value = perlin.GetValue(190,2,3);
+
+	Entity fd(50,-100,80,"sprites/ship.png");
+	Ship test_ship(100,50, "sprites/enemy.png",0.05, 90, 10);
 	bool gameRunning = init_sdl();
 	while(gameRunning == true)
 	{
 		// The main game loop
-		Uint64 frame_start = SDL_GetPerformanceCounter();
+		frame_last = frame_now;
+   		frame_now = SDL_GetPerformanceCounter();
+
+   		delta_time = (double)((frame_now-frame_last)*1000 / (double)SDL_GetPerformanceFrequency());
+
+		
 		test_ship.move();
-		player_1.move();
-		Entity players[3] = {player_1.get_entity(), test_ship.get_entity(), fd};
+		player.move();
+		Entity players[3] = {player.get_entity(), test_ship.get_entity(), fd};
 		int legnth = sizeof(players)/sizeof(players[0]);
-		// /*get any inputs from the user and return them as a list*/
+		// /*get any inputs from the user*/
 		SDL_PumpEvents();
 		kb = SDL_GetKeyboardState(NULL);
 		if(kb[SDL_SCANCODE_SPACE])
 			cout << "space";
 		if(kb[SDL_SCANCODE_DOWN])
-			player_1.accelerate(-1);
+			player.accelerate(-0.03, delta_time);
 		if(kb[SDL_SCANCODE_UP])
-			player_1.accelerate(1);
+			player.accelerate(0.03, delta_time);
 		if(kb[SDL_SCANCODE_LEFT])
-			player_1.rotation -= 1;
+			player.rotation -= 0.2*delta_time;
 		if(kb[SDL_SCANCODE_RIGHT])
-			player_1.rotation += 1;
+			player.rotation += 0.2*delta_time;
 		game_loop();
 		render_objects(players, legnth);
 		// check if exit
 		gameRunning = check_exit();
-
-		Uint64 frame_end = SDL_GetPerformanceCounter();
-
-		float elapsedMS = (frame_end - frame_start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
-		
-
-		// Cap to 60 FPS
-		SDL_Delay(floor(16.666f - elapsedMS));
 	}
 	stop_sdl();
 	return 0;

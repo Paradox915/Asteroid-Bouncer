@@ -34,7 +34,8 @@ void Ship::move()
 {
     // move the obj
     float vertical = magnitude * cos(rotation*PI/180);
-    float horizontal = magnitude * sin(rotation*PI/180);
-    x = horizontal + x;
-    y = -vertical + y;
+    float horizontal = -magnitude * sin(rotation*PI/180);
+    //cout << horizontal << "\n";
+    x =  x + horizontal;
+    y = y + vertical;
 }
