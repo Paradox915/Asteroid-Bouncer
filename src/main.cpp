@@ -18,8 +18,12 @@ using namespace std;
 #include "../include/player.hpp"
 
 // constants
-int WIDTH = 900;
-int HEIGHT = 900;
+int WIDTH = 1200;
+int HEIGHT = 1000;
+
+noise::module::Perlin perlin;
+int SEED = 27;
+float THRESHHOLD = 0.7;
 
 Uint64 frame_now = SDL_GetPerformanceCounter();
 Uint64 frame_last = 0;
@@ -101,6 +105,84 @@ void game_loop()
 	/*the core game loop*/
 }
 
+void render_asteroids(int case_num, float x, float y, float scale)
+{
+	/*render asteroids*/
+	string num_string = to_string(case_num);
+	string input = "sprites/marching_squares/case_"+num_string+".png";
+	surface = IMG_Load(input.c_str());
+	// loads image
+	tex = SDL_CreateTextureFromSurface(renderer, surface); 
+	// clears main-memory 
+	SDL_FreeSurface(surface); 
+
+	// let us control our image position 
+	// so that we can move it with our keyboard. 
+	SDL_Rect dest; 
+
+	// connects our texture with dest to control position 
+	SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h); 
+
+	// adjust height and width of our image box. 
+	dest.w *= scale; 
+	dest.h *= scale; 
+	// sets initial x-position of object 
+	dest.x = (0 - dest.w) / 2; 
+
+	// sets initial y-position of object 
+	dest.y = (0 - dest.h) / 2; 
+	float new_x = WIDTH/2 + (player.x - x);
+	float new_y = HEIGHT/2 + (player.y - y);
+	dest.x += new_x;
+	dest.y += new_y;
+	SDL_RenderCopyEx(renderer, tex, NULL, &dest, 0, NULL, SDL_FLIP_NONE);
+
+	SDL_DestroyTexture(tex);
+
+	
+}
+
+int get_asteroid_case(float x, float y, float box_size)
+{
+	/*get the case for the box with the bottom left corner 
+	at location x,y and size of box_size*/
+	int count = 0;
+	if(perlin.GetValue(x, y, 0.1) > THRESHHOLD)
+	{
+		count += 8;
+	}
+
+	if(perlin.GetValue(x+box_size, y, 0.1) > THRESHHOLD)
+	{
+		count += 4;
+	}
+
+	if(perlin.GetValue(x+box_size, y+box_size, 0.1) > THRESHHOLD)
+	{
+		count += 2;
+	}
+
+	if(perlin.GetValue(x, y+box_size, 0.1) > THRESHHOLD)
+	{
+		count += 1;
+	}
+	return count;
+}
+
+void asteroids_in_range(float xmin, float xmax, float ymin, float ymax, float grid_size)
+{
+	int num;
+	for(float x = xmin; x <= xmax; x+=grid_size)
+	{
+		for(float y = ymin; y <= ymax; y+=grid_size)
+		{
+			num = get_asteroid_case(x, y, grid_size);
+			if(num != 0 && num != 15)
+				render_asteroids(num,x,y, 1);
+		}
+	}
+}
+
 void render(Entity ent)
 {
 	/*render stuf to the screen*/
@@ -121,21 +203,20 @@ void render(Entity ent)
 	SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h); 
 
 	// adjust height and width of our image box. 
-	dest.w *= 6; 
-	dest.h *= 6; 
+	dest.w *= 3; 
+	dest.h *= 3; 
 	// sets initial x-position of object 
 	dest.x = (0 - dest.w) / 2; 
 
 	// sets initial y-position of object 
 	dest.y = (0 - dest.h) / 2; 
 
-	int new_x = WIDTH/2 + (player.x - ent.x);
-	int new_y = HEIGHT/2 + (player.y - ent.y);
+	float new_x = WIDTH/2 + (player.x - ent.x);
+	float new_y = HEIGHT/2 + (player.y - ent.y);
 	dest.x += new_x;
 	dest.y += new_y;
-	//cout <<ent.x<<"-"<<ent.y<<" -- "<<dest.x<<"-"<<dest.y <<"\n";
 	SDL_RenderCopyEx(renderer, tex, NULL, &dest, ent.rotation, NULL, SDL_FLIP_NONE); 
-	 
+	SDL_DestroyTexture(tex);
 }
 
 void render_objects(Entity objects_to_render[], int lengnth)
@@ -147,31 +228,33 @@ void render_objects(Entity objects_to_render[], int lengnth)
 	{
 		render(objects_to_render[i]);
 	}
+
+	// render asteroids
+	asteroids_in_range(player.x-WIDTH/2,player.x+WIDTH/2,player.y-HEIGHT/2,player.y+HEIGHT/2,16);
 	// for multiple rendering 
 	SDL_RenderPresent(renderer);
 }
 
 int main(int argc, char* args[])
-{
-
-	noise::module::Perlin perlin;
-	perlin.SetSeed(1);
-	double value = perlin.GetValue(190,2,3);
+{	
+	perlin.SetSeed(SEED);
+	perlin.SetPersistence(0.7);
+	perlin.SetFrequency(0.001);
+	perlin.SetOctaveCount(5);
 
 	Entity fd(50,-100,80,"sprites/ship.png");
-	Ship test_ship(100,50, "sprites/enemy.png",0.05, 90, 10);
+	Ship test_ship(100,50, "sprites/enemy.png",1, 90, 10);
 	bool gameRunning = init_sdl();
+
 	while(gameRunning == true)
 	{
 		// The main game loop
+		
 		frame_last = frame_now;
    		frame_now = SDL_GetPerformanceCounter();
 
    		delta_time = (double)((frame_now-frame_last)*1000 / (double)SDL_GetPerformanceFrequency());
-
 		
-		test_ship.move();
-		player.move();
 		Entity players[3] = {player.get_entity(), test_ship.get_entity(), fd};
 		int legnth = sizeof(players)/sizeof(players[0]);
 		// /*get any inputs from the user*/
@@ -186,8 +269,13 @@ int main(int argc, char* args[])
 		if(kb[SDL_SCANCODE_LEFT])
 			player.rotation -= 0.2*delta_time;
 		if(kb[SDL_SCANCODE_RIGHT])
-			player.rotation += 0.2*delta_time;
+			// player.rotation += 0.2*delta_time;
+			player.x = 2;
+		if(kb[SDL_SCANCODE_ESCAPE])
+			player.magnitude = 0;
 		game_loop();
+		test_ship.move();
+		player.move();
 		render_objects(players, legnth);
 		// check if exit
 		gameRunning = check_exit();
