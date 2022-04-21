@@ -29,7 +29,7 @@ Uint64 frame_now = SDL_GetPerformanceCounter();
 Uint64 frame_last = 0;
 double delta_time = 0;
 
-Player player(0,0,"sprites/ship.png",0,100, 5, 1);
+Player player(0,0,"sprites/ship.png",0,100, 3, 0.2);
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -171,6 +171,13 @@ int get_asteroid_case(float x, float y, float box_size)
 
 void asteroids_in_range(float xmin, float xmax, float ymin, float ymax, float grid_size)
 {
+	// round to grid
+	xmin = floor(xmin / grid_size) * grid_size;
+	xmax = ceil(xmax / grid_size) * grid_size;
+
+	ymin = floor(ymin / grid_size) * grid_size;
+	ymax = ceil(ymax / grid_size) * grid_size;
+
 	int num;
 	for(float x = xmin; x <= xmax; x+=grid_size)
 	{
@@ -269,8 +276,7 @@ int main(int argc, char* args[])
 		if(kb[SDL_SCANCODE_LEFT])
 			player.rotation -= 0.2*delta_time;
 		if(kb[SDL_SCANCODE_RIGHT])
-			// player.rotation += 0.2*delta_time;
-			player.x = 2;
+			player.rotation += 0.2*delta_time;
 		if(kb[SDL_SCANCODE_ESCAPE])
 			player.magnitude = 0;
 		game_loop();
