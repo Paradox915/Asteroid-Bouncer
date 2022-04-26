@@ -3,7 +3,6 @@ entity classes
 Hugh Smith
 */
 #pragma once
-#include <string>
 
 class Entity
 {

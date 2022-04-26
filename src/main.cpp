@@ -9,6 +9,7 @@ Hugh Smith
 #include <iostream>
 #include <SDL2/SDL_timer.h> 
 #include <noise/noise.h>
+#include <map>
 // bad parctice but im doing it anyway
 using namespace std;
 
@@ -16,6 +17,7 @@ using namespace std;
 #include "../include/spaceships.hpp"
 #include "../include/entity.hpp"
 #include "../include/player.hpp"
+#include "../include/database.hpp"
 
 // constants
 int WIDTH = 1200;
@@ -29,6 +31,9 @@ Uint64 frame_now = SDL_GetPerformanceCounter();
 Uint64 frame_last = 0;
 double delta_time = 0;
 
+// "x y", add_value
+std::map<string, int> perlin_add_values { {"0 0", 10}, {"1 0", 10}, {"0 1", 10}, };
+//perlin_add_values["hfg"] = 4;
 Player player(0,0,"sprites/ship.png",0,100, 3, 0.2);
 
 SDL_Window* window = NULL;
@@ -61,7 +66,8 @@ bool init_sdl()
 		result = false;
 	}
 	
-	Uint32 render_flags = SDL_RENDERER_ACCELERATED; 
+	//Uint32 render_flags = SDL_RENDERER_ACCELERATED;
+	Uint32 render_flags = SDL_RENDERER_PRESENTVSYNC;
 	renderer = SDL_CreateRenderer(window, -1, render_flags);
 	if (renderer == NULL)
 	{
@@ -146,23 +152,37 @@ int get_asteroid_case(float x, float y, float box_size)
 {
 	/*get the case for the box with the bottom left corner 
 	at location x,y and size of box_size*/
+	int adder;
 	int count = 0;
-	if(perlin.GetValue(x, y, 0.1) > THRESHHOLD)
+	adder = 0;
+	string pos_string = to_string(x) + " " + to_string(y);
+	if(perlin_add_values.find(pos_string) != perlin_add_values.end())
+		adder = perlin_add_values[pos_string];
+	if(perlin.GetValue(x, y, 0.1) > THRESHHOLD - adder)
 	{
 		count += 8;
 	}
-
-	if(perlin.GetValue(x+box_size, y, 0.1) > THRESHHOLD)
+	adder = 0;
+	pos_string = to_string(x+box_size) + " " + to_string(y);
+	if(perlin_add_values.find(pos_string) != perlin_add_values.end())
+		adder = perlin_add_values[pos_string];
+	if(perlin.GetValue(x+box_size, y, 0.1) > THRESHHOLD - adder)
 	{
 		count += 4;
 	}
-
-	if(perlin.GetValue(x+box_size, y+box_size, 0.1) > THRESHHOLD)
+	adder = 0;
+	pos_string = to_string(x+box_size) + " " + to_string(y+box_size);
+	if(perlin_add_values.find(pos_string) != perlin_add_values.end())
+		adder = perlin_add_values[pos_string];
+	if(perlin.GetValue(x+box_size, y+box_size, 0.1) > THRESHHOLD - adder)
 	{
 		count += 2;
 	}
-
-	if(perlin.GetValue(x, y+box_size, 0.1) > THRESHHOLD)
+	adder = 0;
+	pos_string = to_string(x) + " " + to_string(y+box_size);
+	if(perlin_add_values.find(pos_string) != perlin_add_values.end())
+		adder = perlin_add_values[pos_string];
+	if(perlin.GetValue(x, y+box_size, 0.1) > THRESHHOLD - adder)
 	{
 		count += 1;
 	}
@@ -252,6 +272,8 @@ int main(int argc, char* args[])
 	Entity fd(50,-100,80,"sprites/ship.png");
 	Ship test_ship(100,50, "sprites/enemy.png",1, 90, 10);
 	bool gameRunning = init_sdl();
+	Uint64 start_frame = 0;
+	Uint64 end_frame;
 
 	while(gameRunning == true)
 	{
@@ -259,9 +281,8 @@ int main(int argc, char* args[])
 		
 		frame_last = frame_now;
    		frame_now = SDL_GetPerformanceCounter();
-
    		delta_time = (double)((frame_now-frame_last)*1000 / (double)SDL_GetPerformanceFrequency());
-		
+
 		Entity players[3] = {player.get_entity(), test_ship.get_entity(), fd};
 		int legnth = sizeof(players)/sizeof(players[0]);
 		// /*get any inputs from the user*/
@@ -287,5 +308,9 @@ int main(int argc, char* args[])
 		gameRunning = check_exit();
 	}
 	stop_sdl();
+	Database scores("../Asteroid-Bouncer/database/player_score.db");
+	//cout << scores.get_item("SELECT name FROM HighScores WHERE ID=1;");
+	cout << scores.get_item("SELECT HighScores FROM Tables;");
+	scores.close();
 	return 0;
 }

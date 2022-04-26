@@ -8,4 +8,4 @@ executable_name = asteroid-bouncer
 
 # compile the exacutable
 all : $(file)
-	g++ $(file) -g -lSDL2 -lSDL2_image -lnoise -o $(executable_name)
+	g++ $(file) -g -lSDL2 -lSDL2_image -lnoise -lsqlite3 -o $(executable_name)

@@ -12,6 +12,7 @@ public:
     float player_speed;
     float max_speed;
     float min_speed;
+    int score;
     void shoot();
     void accelerate(float add_value, double delta_time);
 
@@ -20,6 +21,7 @@ public:
       player_speed = min_speed_input;
       max_speed = max_speed_input;
       min_speed = min_speed_input;
+      score = 0;
   }
 };
 
