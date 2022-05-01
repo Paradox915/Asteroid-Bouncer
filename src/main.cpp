@@ -10,6 +10,8 @@ Hugh Smith
 #include <SDL2/SDL_timer.h> 
 #include <noise/noise.h>
 #include <map>
+#include<fstream>
+#include<json/json.h>
 // bad parctice but im doing it anyway
 using namespace std;
 
@@ -17,7 +19,6 @@ using namespace std;
 #include "../include/spaceships.hpp"
 #include "../include/entity.hpp"
 #include "../include/player.hpp"
-#include "../include/database.hpp"
 
 // constants
 int WIDTH = 1200;
@@ -80,6 +81,7 @@ bool init_sdl()
 
 void stop_sdl()
 {
+	
 	/*Function to stop SDL*/
 
 	// destroy renderer 
@@ -109,6 +111,16 @@ bool check_exit()
 void game_loop()
 {
 	/*the core game loop*/
+}
+
+void player_scores_json()
+{
+	/*get the players score into the json file*/
+	// read a JSON file
+	ifstream i("database/player_scores.json", std::ifstream::binary);
+	Json::Value j;
+	i >> j;
+	cout << j;
 }
 
 void render_asteroids(int case_num, float x, float y, float scale)
@@ -145,7 +157,7 @@ void render_asteroids(int case_num, float x, float y, float scale)
 
 	SDL_DestroyTexture(tex);
 
-	
+		
 }
 
 int get_asteroid_case(float x, float y, float box_size)
@@ -262,6 +274,7 @@ void render_objects(Entity objects_to_render[], int lengnth)
 	SDL_RenderPresent(renderer);
 }
 
+
 int main(int argc, char* args[])
 {	
 	perlin.SetSeed(SEED);
@@ -307,10 +320,6 @@ int main(int argc, char* args[])
 		// check if exit
 		gameRunning = check_exit();
 	}
-	stop_sdl();
-	Database scores("../Asteroid-Bouncer/database/player_score.db");
-	//cout << scores.get_item("SELECT name FROM HighScores WHERE ID=1;");
-	cout << scores.get_item("SELECT HighScores FROM Tables;");
-	scores.close();
+	player_scores_json();
 	return 0;
 }
