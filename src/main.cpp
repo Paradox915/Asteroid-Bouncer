@@ -35,7 +35,7 @@ double delta_time = 0;
 // "x y", add_value
 std::map<string, int> perlin_add_values { {"0 0", 10}, {"1 0", 10}, {"0 1", 10}, };
 //perlin_add_values["hfg"] = 4;
-Player player(0,0,"sprites/ship.png",0,100, 3, 0.2);
+Player player(0,0,"sprites/player.png",0,100, 3, 0.2);
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -282,7 +282,7 @@ int main(int argc, char* args[])
 	perlin.SetFrequency(0.001);
 	perlin.SetOctaveCount(5);
 
-	Entity fd(50,-100,80,"sprites/ship.png");
+	Entity fd(50,-100,80,"sprites/planet.png");
 	Ship test_ship(100,50, "sprites/enemy.png",1, 90, 10);
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
