@@ -11,7 +11,7 @@ Hugh Smith
 class Ship : public Entity
 {
 public:
-  void move();
+  Entity move();
   Entity get_entity();
   // The ship class that every thing inherants from
   float magnitude; // The the speed
@@ -30,7 +30,7 @@ Entity Ship::get_entity()
       return Entity(x, y, rotation, texture);
     }
 
-void Ship::move()
+Entity Ship::move()
 {
     // move the obj
     float vertical = magnitude * cos(rotation*PI/180);
@@ -38,4 +38,5 @@ void Ship::move()
     //cout << horizontal << "\n";
     x =  x + horizontal;
     y = y + vertical;
+    return get_entity();
 }

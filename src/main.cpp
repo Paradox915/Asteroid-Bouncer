@@ -12,6 +12,7 @@ Hugh Smith
 #include <map>
 #include<fstream>
 #include<json/json.h>
+#include <list>
 // bad parctice but im doing it anyway
 using namespace std;
 
@@ -19,10 +20,13 @@ using namespace std;
 #include "../include/spaceships.hpp"
 #include "../include/entity.hpp"
 #include "../include/player.hpp"
+#include "../include/bullet.hpp"
 
 // constants
 int WIDTH = 1200;
 int HEIGHT = 1000;
+
+string name = "Hugh2";
 
 noise::module::Perlin perlin;
 int SEED = 27;
@@ -113,13 +117,17 @@ void game_loop()
 	/*the core game loop*/
 }
 
-void player_scores_json()
+void player_scores_json(int score)
 {
 	/*get the players score into the json file*/
 	// read a JSON file
 	ifstream i("database/player_scores.json", std::ifstream::binary);
 	Json::Value j;
 	i >> j;
+	if(j[name] < score)
+	{
+		j[name] = score;
+	}
 	cout << j;
 }
 
@@ -258,14 +266,14 @@ void render(Entity ent)
 	SDL_DestroyTexture(tex);
 }
 
-void render_objects(Entity objects_to_render[], int lengnth)
+void render_objects(list<Entity> objects_to_render)
 {
 	/*render all objects in list*/
 	// clears the screen 
 	SDL_RenderClear(renderer); 
-	for(int i = 0;  i < lengnth; i ++)
+	for(Entity object : objects_to_render)
 	{
-		render(objects_to_render[i]);
+		render(object);
 	}
 
 	// render asteroids
@@ -287,22 +295,27 @@ int main(int argc, char* args[])
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
 	Uint64 end_frame;
-
+	list<Bullet> bullets;
 	while(gameRunning == true)
 	{
 		// The main game loop
-		
+		list<Entity> objects = {};
 		frame_last = frame_now;
    		frame_now = SDL_GetPerformanceCounter();
    		delta_time = (double)((frame_now-frame_last)*1000 / (double)SDL_GetPerformanceFrequency());
 
-		Entity players[3] = {player.get_entity(), test_ship.get_entity(), fd};
-		int legnth = sizeof(players)/sizeof(players[0]);
+		
 		// /*get any inputs from the user*/
 		SDL_PumpEvents();
 		kb = SDL_GetKeyboardState(NULL);
-		if(kb[SDL_SCANCODE_SPACE])
-			cout << "space";
+		if(kb[SDL_SCANCODE_SPACE]){
+			Bullet current_bullet = player.shoot(0);
+			bullets.push_front(current_bullet);
+		}
+		if(kb[SDL_SCANCODE_LALT]){
+			Bullet current_bullet = player.shoot(1);
+			bullets.push_front(current_bullet);
+		}
 		if(kb[SDL_SCANCODE_DOWN])
 			player.accelerate(-0.03, delta_time);
 		if(kb[SDL_SCANCODE_UP])
@@ -314,12 +327,21 @@ int main(int argc, char* args[])
 		if(kb[SDL_SCANCODE_ESCAPE])
 			player.magnitude = 0;
 		game_loop();
-		test_ship.move();
-		player.move();
-		render_objects(players, legnth);
+
+		typedef list< Bullet > Cont;
+		for( Cont::iterator i = bullets.begin(); i != bullets.end(); ++i ) {
+			// dereference the iterator to get a reference to the element
+			Bullet & s( *i );
+			// test it 
+			objects.push_front(s.move());
+		//cout << "\n"<<e.x<<"-"<<e.y<<"\n======\n";
+		}
+		objects.push_front(test_ship.move());
+		objects.push_front(player.move());
+		render_objects(objects);
 		// check if exit
 		gameRunning = check_exit();
 	}
-	player_scores_json();
+	player_scores_json(player.score);
 	return 0;
 }

@@ -8,29 +8,31 @@ Hugh Smith
 
 #define PI 3.14159265
 
-class Ship : public Entity
+class Bullet : public Entity
 {
 public:
-  void move();
+  Entity move();
   Entity get_entity();
-  // The ship class that every thing inherants from
+  // The Bullet class that every thing inherants from
   float magnitude; // The the speed
-  int health; // The health
+  float damage;
+  int range;
   
   // constructor
-  Ship(float x_input, float y_input, const char* texture_input, float magnitude_input, float rotation_input, float health_input):Entity(x_input, y_input, rotation_input, texture_input){
+  Bullet(float x_input, float y_input, const char* texture_input, float magnitude_input, float rotation_input, float damage_input, int range_input):Entity(x_input, y_input, rotation_input, texture_input){
     magnitude = magnitude_input;
-    health = health_input;
+    damage = damage_input;
+    range = range_input;
   }
 };
 
-Entity Ship::get_entity()
+Entity Bullet::get_entity()
     {
-      /*get an entity of the ship*/
+      /*get an entity of the Bullet*/
       return Entity(x, y, rotation, texture);
     }
 
-void Ship::move()
+Entity Bullet::move()
 {
     // move the obj
     float vertical = magnitude * cos(rotation*PI/180);
@@ -38,4 +40,5 @@ void Ship::move()
     //cout << horizontal << "\n";
     x =  x + horizontal;
     y = y + vertical;
+    return get_entity();
 }

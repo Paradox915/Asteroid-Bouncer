@@ -4,7 +4,7 @@ Hugh Smith
 */
 #pragma once
 #include "spaceships.hpp"
-
+#include "../include/bullet.hpp"
 
 class Player : public Ship
 {
@@ -13,7 +13,7 @@ public:
     float max_speed;
     float min_speed;
     int score;
-    void shoot();
+    Bullet shoot(int type);
     void accelerate(float add_value, double delta_time);
 
   // constructor
@@ -25,9 +25,27 @@ public:
   }
 };
 
-void Player::shoot()
+Bullet Player::shoot(int type)
 {
-    /*shooting*/
+    /*shooting
+    0 = lazers
+    1 = canon*/
+    Bullet bullet(x, y,"",10, rotation, 0, 0);
+    if(type == 0)// lazers
+    {
+        bullet.damage = 0.5;
+        bullet.range = 5;
+        bullet.magnitude = 3.5;
+        bullet.texture = "sprites/lazer.png";
+    }else if(type == 1)// canon
+    {
+        bullet.damage = 3;
+        bullet.range = 10;
+        bullet.magnitude = 1;
+        bullet.texture = "sprites/canon_ball.png";
+    }
+    cout << bullet.x<<" "<< bullet.y<<bullet.texture<<"\n";
+    return bullet;
 }
 
 void Player::accelerate(float add_value, double delta_time)
