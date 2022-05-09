@@ -120,7 +120,7 @@ void game_loop()
 void player_scores_json(int score)
 {
 	/*get the players score into the json file*/
-	// read a JSON file
+	// read the file
 	ifstream i("database/player_scores.json", std::ifstream::binary);
 	Json::Value j;
 	i >> j;
@@ -128,7 +128,9 @@ void player_scores_json(int score)
 	{
 		j[name] = score;
 	}
-	cout << j;
+	// output the file
+	std::ofstream o("database/player_scores.json");
+	o << j;
 }
 
 void render_asteroids(int case_num, float x, float y, float scale)
@@ -309,11 +311,11 @@ int main(int argc, char* args[])
 		SDL_PumpEvents();
 		kb = SDL_GetKeyboardState(NULL);
 		if(kb[SDL_SCANCODE_SPACE]){
-			Bullet current_bullet = player.shoot(0);
+			Bullet current_bullet = player.shoot(0, SDL_GetTicks());
 			bullets.push_front(current_bullet);
 		}
 		if(kb[SDL_SCANCODE_LALT]){
-			Bullet current_bullet = player.shoot(1);
+			Bullet current_bullet = player.shoot(1, SDL_GetTicks());
 			bullets.push_front(current_bullet);
 		}
 		if(kb[SDL_SCANCODE_DOWN])
@@ -331,13 +333,12 @@ int main(int argc, char* args[])
 		typedef list< Bullet > Cont;
 		for( Cont::iterator i = bullets.begin(); i != bullets.end(); ++i ) {
 			// dereference the iterator to get a reference to the element
-			Bullet & s( *i );
+			Bullet & s(*i);
 			// test it 
 			objects.push_front(s.move());
-		//cout << "\n"<<e.x<<"-"<<e.y<<"\n======\n";
 		}
 		objects.push_front(test_ship.move());
-		objects.push_front(player.move());
+		objects.push_back(player.move());
 		render_objects(objects);
 		// check if exit
 		gameRunning = check_exit();
