@@ -17,6 +17,7 @@ Hugh Smith
 using namespace std;
 
 // includes - header files
+
 #include "../include/spaceships.hpp"
 #include "../include/entity.hpp"
 #include "../include/player.hpp"
@@ -28,9 +29,12 @@ int HEIGHT = 1000;
 
 string name = "Hugh2";
 
+const char* map_file = "sprites/map/big_map.png";
+SDL_Surface* game_map = IMG_Load(map_file);
+
 noise::module::Perlin perlin;
 int SEED = 27;
-float THRESHHOLD = 0.7;
+float THRESHHOLD = 217;//0.7
 
 Uint64 frame_now = SDL_GetPerformanceCounter();
 Uint64 frame_last = 0;
@@ -39,7 +43,7 @@ double delta_time = 0;
 // "x y", add_value
 std::map<string, int> perlin_add_values { {"0 0", 10}, {"1 0", 10}, {"0 1", 10}, };
 //perlin_add_values["hfg"] = 4;
-Player player(0,0,"sprites/player.png",0,100, 3, 0.2);
+Player player(960,540,"sprites/player.png",0,100, 3, 0.2);
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -133,6 +137,84 @@ void player_scores_json(int score)
 	o << j;
 }
 
+/* 
+this function came from:
+https://stackoverflow.com/questions/53033971/how-to-get-the-color-of-a-specific-pixel-from-sdl-surface 
+*/
+Uint32 getpixel(SDL_Surface *surface, int x, int y)
+{
+    int bpp = surface->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to retrieve */
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+switch (bpp)
+{
+    case 1:
+        return *p;
+        break;
+
+    case 2:
+        return *(Uint16 *)p;
+        break;
+
+    case 3:
+        if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+            return p[0] << 16 | p[1] << 8 | p[2];
+        else
+            return p[0] | p[1] << 8 | p[2] << 16;
+            break;
+
+        case 4:
+            return *(Uint32 *)p;
+            break;
+
+        default:
+            return 0;       /* shouldn't happen, but avoids warnings */
+      }
+}
+/* 
+this function came from:
+https://stackoverflow.com/questions/6852055/how-can-i-modify-pixels-using-sdl
+*/
+void PutPixel24_nolock(SDL_Surface * surface, int x, int y, Uint32 color)
+{
+    Uint8 * pixel = (Uint8*)surface->pixels;
+    pixel += (y * surface->pitch) + (x * sizeof(Uint8) * 3);
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    pixel[0] = (color >> 24) & 0xFF;
+    pixel[1] = (color >> 16) & 0xFF;
+    pixel[2] = (color >> 8) & 0xFF;
+#else
+    pixel[0] = color & 0xFF;
+    pixel[1] = (color >> 8) & 0xFF;
+    pixel[2] = (color >> 16) & 0xFF;
+#endif
+}
+void PutPixel24(SDL_Surface * surface, int x, int y, Uint32 color)
+{
+    if( SDL_MUSTLOCK(surface) )
+        SDL_LockSurface(surface);
+    PutPixel24_nolock(surface, x, y, color);
+    if( SDL_MUSTLOCK(surface) )
+        SDL_LockSurface(surface);
+}
+
+void set_pixel_colour(SDL_Surface* game_map,int x, int y, int value)
+{
+	/*change the colour of a pixel, just changes all rgb values the same*/
+	PutPixel24(game_map, x, y, (Uint32)0xFF000000 | value | (value << 16) | (value << 8));
+}
+
+int get_pixel_darkness(SDL_Surface* game_map, int x, int y)
+{
+	/*return how dark a pixel is*/
+	SDL_Color rgb;
+	Uint32 data = getpixel(game_map, x, y);
+	SDL_GetRGB(data, game_map->format, &rgb.r, &rgb.g, &rgb.b);
+	return (int)(rgb.b+rgb.r+rgb.g)/3;
+}
+
+
 void render_asteroids(int case_num, float x, float y, float scale)
 {
 	/*render asteroids*/
@@ -174,37 +256,22 @@ int get_asteroid_case(float x, float y, float box_size)
 {
 	/*get the case for the box with the bottom left corner 
 	at location x,y and size of box_size*/
-	int adder;
 	int count = 0;
-	adder = 0;
-	string pos_string = to_string(x) + " " + to_string(y);
-	if(perlin_add_values.find(pos_string) != perlin_add_values.end())
-		adder = perlin_add_values[pos_string];
-	if(perlin.GetValue(x, y, 0.1) > THRESHHOLD - adder)
+	//cout << x << "  -  "<< y << " --: "<< get_pixel_darkness(game_map, x, y)<< "\n\n";
+	//cout << get_pixel_darkness(game_map, 200, 200)<< "\n";
+	if(get_pixel_darkness(game_map, x, y) > THRESHHOLD)
 	{
 		count += 8;
 	}
-	adder = 0;
-	pos_string = to_string(x+box_size) + " " + to_string(y);
-	if(perlin_add_values.find(pos_string) != perlin_add_values.end())
-		adder = perlin_add_values[pos_string];
-	if(perlin.GetValue(x+box_size, y, 0.1) > THRESHHOLD - adder)
+	if(get_pixel_darkness(game_map, x+box_size, y) > THRESHHOLD)
 	{
 		count += 4;
 	}
-	adder = 0;
-	pos_string = to_string(x+box_size) + " " + to_string(y+box_size);
-	if(perlin_add_values.find(pos_string) != perlin_add_values.end())
-		adder = perlin_add_values[pos_string];
-	if(perlin.GetValue(x+box_size, y+box_size, 0.1) > THRESHHOLD - adder)
+	if(get_pixel_darkness(game_map, x+box_size, y+box_size) > THRESHHOLD)
 	{
 		count += 2;
 	}
-	adder = 0;
-	pos_string = to_string(x) + " " + to_string(y+box_size);
-	if(perlin_add_values.find(pos_string) != perlin_add_values.end())
-		adder = perlin_add_values[pos_string];
-	if(perlin.GetValue(x, y+box_size, 0.1) > THRESHHOLD - adder)
+	if(get_pixel_darkness(game_map, x, y+box_size) > THRESHHOLD)
 	{
 		count += 1;
 	}
@@ -284,6 +351,17 @@ void render_objects(list<Entity> objects_to_render)
 	SDL_RenderPresent(renderer);
 }
 
+void stop()
+{
+	/*exit the program*/
+	// stop sdl
+	stop_sdl();
+	// add the player score
+	player_scores_json(player.score);
+	// save the map
+	SDL_SaveBMP(game_map, map_file);
+
+}
 
 int main(int argc, char* args[])
 {	
@@ -291,13 +369,17 @@ int main(int argc, char* args[])
 	perlin.SetPersistence(0.7);
 	perlin.SetFrequency(0.001);
 	perlin.SetOctaveCount(5);
-
+	
 	Entity fd(50,-100,80,"sprites/planet.png");
 	Ship test_ship(100,50, "sprites/enemy.png",1, 90, 10);
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
 	Uint64 end_frame;
 	list<Bullet> bullets;
+
+	cout << get_pixel_darkness(game_map, 960, 540)<< "\n";
+	cout << get_pixel_darkness(game_map, 2, 2)<< "\n";
+
 	while(gameRunning == true)
 	{
 		// The main game loop
@@ -330,11 +412,9 @@ int main(int argc, char* args[])
 			player.magnitude = 0;
 		game_loop();
 
-		typedef list< Bullet > Cont;
+		typedef list<Bullet> Cont;
 		for( Cont::iterator i = bullets.begin(); i != bullets.end(); ++i ) {
-			// dereference the iterator to get a reference to the element
 			Bullet & s(*i);
-			// test it 
 			objects.push_front(s.move());
 		}
 		objects.push_front(test_ship.move());
@@ -343,6 +423,6 @@ int main(int argc, char* args[])
 		// check if exit
 		gameRunning = check_exit();
 	}
-	player_scores_json(player.score);
+	stop();
 	return 0;
 }
