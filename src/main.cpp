@@ -8,7 +8,6 @@ Hugh Smith
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <SDL2/SDL_timer.h> 
-#include <noise/noise.h>
 #include <map>
 #include<fstream>
 #include<json/json.h>
@@ -22,6 +21,7 @@ using namespace std;
 #include "../include/entity.hpp"
 #include "../include/player.hpp"
 #include "../include/bullet.hpp"
+#include "../include/pixel_functions.hpp"
 
 // constants
 int WIDTH = 1200;
@@ -32,9 +32,7 @@ string name = "Hugh2";
 const char* map_file = "sprites/map/big_map.png";
 SDL_Surface* game_map = IMG_Load(map_file);
 
-noise::module::Perlin perlin;
-int SEED = 27;
-float THRESHHOLD = 217;//0.7
+float THRESHHOLD = 217;
 
 Uint64 frame_now = SDL_GetPerformanceCounter();
 Uint64 frame_last = 0;
@@ -43,7 +41,7 @@ double delta_time = 0;
 // "x y", add_value
 std::map<string, int> perlin_add_values { {"0 0", 10}, {"1 0", 10}, {"0 1", 10}, };
 //perlin_add_values["hfg"] = 4;
-Player player(960,540,"sprites/player.png",0,100, 3, 0.2);
+Player player(960,540,"sprites/funky_ship_sprtesheet (1).png",0,100, 3, 0.2);
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -137,83 +135,18 @@ void player_scores_json(int score)
 	o << j;
 }
 
-/* 
-this function came from:
-https://stackoverflow.com/questions/53033971/how-to-get-the-color-of-a-specific-pixel-from-sdl-surface 
-*/
-Uint32 getpixel(SDL_Surface *surface, int x, int y)
+
+void hit_asteroid(SDL_Surface* game_map, int x, int y, int range, float stregnth)
 {
-    int bpp = surface->format->BytesPerPixel;
-    /* Here p is the address to the pixel we want to retrieve */
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
-
-switch (bpp)
-{
-    case 1:
-        return *p;
-        break;
-
-    case 2:
-        return *(Uint16 *)p;
-        break;
-
-    case 3:
-        if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-            return p[0] << 16 | p[1] << 8 | p[2];
-        else
-            return p[0] | p[1] << 8 | p[2] << 16;
-            break;
-
-        case 4:
-            return *(Uint32 *)p;
-            break;
-
-        default:
-            return 0;       /* shouldn't happen, but avoids warnings */
-      }
+	/*change the file in turms of a hit*/
+	for(int i = x - range; i < x + range; i ++)
+	{
+	for(int j = y - range; j < y + range; j ++)
+	{
+		set_pixel_colour(game_map, i, j, 255);
+	}
+	}
 }
-/* 
-this function came from:
-https://stackoverflow.com/questions/6852055/how-can-i-modify-pixels-using-sdl
-*/
-void PutPixel24_nolock(SDL_Surface * surface, int x, int y, Uint32 color)
-{
-    Uint8 * pixel = (Uint8*)surface->pixels;
-    pixel += (y * surface->pitch) + (x * sizeof(Uint8) * 3);
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    pixel[0] = (color >> 24) & 0xFF;
-    pixel[1] = (color >> 16) & 0xFF;
-    pixel[2] = (color >> 8) & 0xFF;
-#else
-    pixel[0] = color & 0xFF;
-    pixel[1] = (color >> 8) & 0xFF;
-    pixel[2] = (color >> 16) & 0xFF;
-#endif
-}
-void PutPixel24(SDL_Surface * surface, int x, int y, Uint32 color)
-{
-    if( SDL_MUSTLOCK(surface) )
-        SDL_LockSurface(surface);
-    PutPixel24_nolock(surface, x, y, color);
-    if( SDL_MUSTLOCK(surface) )
-        SDL_LockSurface(surface);
-}
-
-void set_pixel_colour(SDL_Surface* game_map,int x, int y, int value)
-{
-	/*change the colour of a pixel, just changes all rgb values the same*/
-	PutPixel24(game_map, x, y, (Uint32)0xFF000000 | value | (value << 16) | (value << 8));
-}
-
-int get_pixel_darkness(SDL_Surface* game_map, int x, int y)
-{
-	/*return how dark a pixel is*/
-	SDL_Color rgb;
-	Uint32 data = getpixel(game_map, x, y);
-	SDL_GetRGB(data, game_map->format, &rgb.r, &rgb.g, &rgb.b);
-	return (int)(rgb.b+rgb.r+rgb.g)/3;
-}
-
 
 void render_asteroids(int case_num, float x, float y, float scale)
 {
@@ -335,6 +268,48 @@ void render(Entity ent)
 	SDL_DestroyTexture(tex);
 }
 
+void render_player(Entity ent)
+{
+	/*render the player to the screen*/
+
+	surface = IMG_Load(ent.texture); 
+
+	// loads image to our graphics hardware memory. 
+	tex = SDL_CreateTextureFromSurface(renderer, surface); 
+
+	// clears main-memory 
+	SDL_FreeSurface(surface); 
+
+	// let us control our image position 
+	// so that we can move it with our keyboard. 
+	SDL_Rect dest; 
+
+	// connects our texture with dest to control position 
+	SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h); 
+
+	// adjust height and width of our image box. 
+	dest.w *= 1; 
+	dest.h *= 3.66; 
+
+	// sets initial x-position of object 
+	dest.x = (0 - dest.w) / 2; 
+
+	// sets initial y-position of object 
+	dest.y = (0 - dest.h) / 2; 
+
+	float new_x = WIDTH/2 + (player.x - ent.x);
+	float new_y = HEIGHT/2 + (player.y - ent.y);
+	dest.x += new_x;
+	dest.y += new_y;
+	//SDL_RenderCopy(renderer, tex, &srcrect, &dest);
+	int ticks = SDL_GetTicks();
+	int seconds = ticks / 100;		
+	int sprite = seconds % 4;
+	SDL_Rect srcrect = {sprite*32, 0, 32, 48};
+	SDL_RenderCopyEx(renderer, tex, &srcrect, &dest, ent.rotation, NULL, SDL_FLIP_NONE); 
+	SDL_DestroyTexture(tex);
+}
+
 void render_objects(list<Entity> objects_to_render)
 {
 	/*render all objects in list*/
@@ -348,6 +323,7 @@ void render_objects(list<Entity> objects_to_render)
 	// render asteroids
 	asteroids_in_range(player.x-WIDTH/2,player.x+WIDTH/2,player.y-HEIGHT/2,player.y+HEIGHT/2,16);
 	// for multiple rendering 
+	render_player(player.move());
 	SDL_RenderPresent(renderer);
 }
 
@@ -359,26 +335,19 @@ void stop()
 	// add the player score
 	player_scores_json(player.score);
 	// save the map
-	SDL_SaveBMP(game_map, map_file);
+	//SDL_SaveBMP(game_map, map_file);
 
 }
 
 int main(int argc, char* args[])
-{	
-	perlin.SetSeed(SEED);
-	perlin.SetPersistence(0.7);
-	perlin.SetFrequency(0.001);
-	perlin.SetOctaveCount(5);
-	
+{		
 	Entity fd(50,-100,80,"sprites/planet.png");
 	Ship test_ship(100,50, "sprites/enemy.png",1, 90, 10);
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
 	Uint64 end_frame;
 	list<Bullet> bullets;
-
-	cout << get_pixel_darkness(game_map, 960, 540)<< "\n";
-	cout << get_pixel_darkness(game_map, 2, 2)<< "\n";
+	Uint32 time = 0;
 
 	while(gameRunning == true)
 	{
@@ -392,12 +361,9 @@ int main(int argc, char* args[])
 		// /*get any inputs from the user*/
 		SDL_PumpEvents();
 		kb = SDL_GetKeyboardState(NULL);
-		if(kb[SDL_SCANCODE_SPACE]){
-			Bullet current_bullet = player.shoot(0, SDL_GetTicks());
-			bullets.push_front(current_bullet);
-		}
-		if(kb[SDL_SCANCODE_LALT]){
-			Bullet current_bullet = player.shoot(1, SDL_GetTicks());
+		if(kb[SDL_SCANCODE_SPACE] && time < SDL_GetTicks()){
+			time = SDL_GetTicks() + 100;
+			Bullet current_bullet = player.shoot();
 			bullets.push_front(current_bullet);
 		}
 		if(kb[SDL_SCANCODE_DOWN])
@@ -416,12 +382,20 @@ int main(int argc, char* args[])
 		for( Cont::iterator i = bullets.begin(); i != bullets.end(); ++i ) {
 			Bullet & s(*i);
 			objects.push_front(s.move());
+			if(s.check_collision_asteroids(game_map, THRESHHOLD))
+			{
+				hit_asteroid(game_map, s.x, s.y, 50, 100);
+				i = bullets.erase(i);
+			}
 		}
 		objects.push_front(test_ship.move());
-		objects.push_back(player.move());
 		render_objects(objects);
 		// check if exit
 		gameRunning = check_exit();
+		if(player.check_collision_asteroids(game_map, THRESHHOLD))
+		{
+			hit_asteroid(game_map, player.x, player.y, 30, 100);
+		}
 	}
 	stop();
 	return 0;
