@@ -41,7 +41,7 @@ double delta_time = 0;
 // "x y", add_value
 std::map<string, int> perlin_add_values { {"0 0", 10}, {"1 0", 10}, {"0 1", 10}, };
 //perlin_add_values["hfg"] = 4;
-Player player(960,540,"sprites/funky_ship_sprtesheet (1).png",0,100, 3, 0.2);
+Player player(960,540,"sprites/player/funky_ship_sprtesheet (1).png",0,100, 3, 0.2);
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;

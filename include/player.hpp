@@ -40,7 +40,7 @@ Bullet Player::shoot()
     bullet.damage = 0.5;
     bullet.range = 5;
     bullet.magnitude = 15+magnitude;
-    bullet.texture = "sprites/lazer.png";
+    bullet.texture = "sprites/bullets/lazer.png";
     bullet.x += sin(rad_rot-90) * lazer_x_offset * left_right;
     bullet.y += -cos(rad_rot-90) * lazer_x_offset * left_right;
     left_right *= -1;
