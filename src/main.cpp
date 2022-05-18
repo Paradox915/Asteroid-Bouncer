@@ -135,7 +135,6 @@ void player_scores_json(int score)
 	o << j;
 }
 
-
 void hit_asteroid(SDL_Surface* game_map, int x, int y, int range, float stregnth)
 {
 	/*change the file in turms of a hit*/
