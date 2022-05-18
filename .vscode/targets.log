@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon May 16 08:08:52 2022
+# Make data base, printed on Wed May 18 00:27:40 2022
 
 # Variables
 
@@ -17,7 +17,7 @@ LC_ALL = C
 # environment
 NO_AT_BRIDGE = 1
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-47894822-d7eb-4d29-9a1d-c6f5964c53a6.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-0d8f5bb6-2fa3-49a0-9704-55c08a7e3050.sock
 # environment
 VSCODE_CWD = /home/hugh
 # environment
@@ -79,7 +79,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 789
+VSCODE_PID = 246362
 # environment
 XDG_SESSION_TYPE = tty
 # automatic
@@ -119,7 +119,7 @@ MOTD_SHOWN = pam
 # automatic
 ^F = $(notdir $^)
 # environment
-INVOCATION_ID = adfe9995ebde49da9852b8f0b02e3c26
+INVOCATION_ID = 5ee99a6e3943443d821197d675e1643a
 # environment
 VSCODE_LOG_NATIVE = false
 # automatic
@@ -139,7 +139,7 @@ XDG_VTNR = 1
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 449
+SYSTEMD_EXEC_PID = 446
 # environment
 DISPLAY = :0
 # environment
@@ -265,6 +265,6 @@ all: src/main.cpp
 # strcache performance: lookups = 25 / hit rate = 28%
 # hash-table stats:
 # Load=18/8192=0%, Rehash=0, Collisions=0/25=0%
-# Finished Make data base on Mon May 16 08:08:52 2022
+# Finished Make data base on Wed May 18 00:27:40 2022
 
  
