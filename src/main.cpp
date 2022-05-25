@@ -21,12 +21,13 @@ using namespace std;
 #include "../include/entity.hpp"
 #include "../include/player.hpp"
 #include "../include/bullet.hpp"
+#include "../include/enemy.hpp"
 #include "../include/pixel_functions.hpp"
 
 // constants
 int WIDTH = 1200;
 int HEIGHT = 1000;
-
+int GRID_SIZE = 16;
 string name = "Hugh2";
 
 const char* map_file = "sprites/map/big_map.png";
@@ -226,7 +227,7 @@ void asteroids_in_range(float xmin, float xmax, float ymin, float ymax, float gr
 		{
 			num = get_asteroid_case(x, y, grid_size);
 			if(num != 0 && num != 15)
-				render_asteroids(num,x,y, 1);
+				render_asteroids(num,x,y, GRID_SIZE/16);
 		}
 	}
 }
@@ -320,7 +321,7 @@ void render_objects(list<Entity> objects_to_render)
 	}
 
 	// render asteroids
-	asteroids_in_range(player.x-WIDTH/2,player.x+WIDTH/2,player.y-HEIGHT/2,player.y+HEIGHT/2,16);
+	asteroids_in_range(player.x-WIDTH/2,player.x+WIDTH/2,player.y-HEIGHT/2,player.y+HEIGHT/2,GRID_SIZE);
 	// for multiple rendering 
 	render_player(player.move());
 	SDL_RenderPresent(renderer);
@@ -340,8 +341,11 @@ void stop()
 
 int main(int argc, char* args[])
 {		
-	Entity fd(50,-100,80,"sprites/planet.png");
-	Ship test_ship(100,50, "sprites/enemy.png",1, 90, 10);
+	Enemy one(960,540,"sprites/enemy.png",90,100, 1);
+	Enemy two(960,500,"sprites/enemy.png",0,100, 1.2);
+	list<Enemy> enemys;
+	enemys.push_front(one);
+	enemys.push_front(two);
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
 	Uint64 end_frame;
@@ -375,6 +379,10 @@ int main(int argc, char* args[])
 			player.rotation += 0.2*delta_time;
 		if(kb[SDL_SCANCODE_ESCAPE])
 			player.magnitude = 0;
+		if(kb[SDL_SCANCODE_EQUALS]&& GRID_SIZE < 80)
+			GRID_SIZE += 1;
+		if(kb[SDL_SCANCODE_MINUS] && GRID_SIZE > 16)
+			GRID_SIZE -= 1;
 		game_loop();
 
 		typedef list<Bullet> Cont;
@@ -387,7 +395,12 @@ int main(int argc, char* args[])
 				i = bullets.erase(i);
 			}
 		}
-		objects.push_front(test_ship.move());
+		typedef list<Enemy> Cont2;
+		for( Cont2::iterator i = enemys.begin(); i != enemys.end(); ++i ) {
+			Enemy & s(*i);
+			s.boids(enemys);
+			objects.push_front(s.move());
+		}
 		render_objects(objects);
 		// check if exit
 		gameRunning = check_exit();

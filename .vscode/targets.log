@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed May 18 00:27:40 2022
+# Make data base, printed on Wed May 25 21:06:20 2022
 
 # Variables
 
@@ -17,7 +17,7 @@ LC_ALL = C
 # environment
 NO_AT_BRIDGE = 1
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-0d8f5bb6-2fa3-49a0-9704-55c08a7e3050.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-f668f3bb-f62d-440f-89dc-c94602643ad0.sock
 # environment
 VSCODE_CWD = /home/hugh
 # environment
@@ -45,7 +45,7 @@ VSCODE_LOG_STACK = false
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = /home/hugh/.config/Code/CachedData/da15b6fd3ef856477bf6f4fb29ba1b7af717770d
+VSCODE_CODE_CACHE_PATH = /home/hugh/.config/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
 # environment
 LANG = C
 # environment
@@ -79,7 +79,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 246362
+VSCODE_PID = 161280
 # environment
 XDG_SESSION_TYPE = tty
 # automatic
@@ -119,7 +119,7 @@ MOTD_SHOWN = pam
 # automatic
 ^F = $(notdir $^)
 # environment
-INVOCATION_ID = 5ee99a6e3943443d821197d675e1643a
+INVOCATION_ID = d5b4ea1e444b4051aa5f6faa690932e6
 # environment
 VSCODE_LOG_NATIVE = false
 # automatic
@@ -139,7 +139,7 @@ XDG_VTNR = 1
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 446
+SYSTEMD_EXEC_PID = 451
 # environment
 DISPLAY = :0
 # environment
@@ -159,7 +159,7 @@ HOME = /home/hugh
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-8f18271f-1.67.1-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-8f18271f-1.67.2-main.sock
 # environment
 TERM = linux
 # environment
@@ -200,14 +200,14 @@ DOTNET_ROOT = /usr/share/dotnet
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-10 22:20:32.190248599
+#  Last modified 2022-05-25 19:11:29.808055946
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 src/main.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-15 21:40:16.324527415
+#  Last modified 2022-05-25 21:05:52.679784739
 #  File has been updated.
 #  Successfully updated.
 
@@ -243,7 +243,7 @@ all: src/main.cpp
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/13=8%
 #  recipe to execute (from 'Makefile', line 11):
-	g++ $(file) -g -lSDL2 -lSDL2_image -lnoise -ljsoncpp -o $(executable_name)
+	g++ $(file) -g -I/usr/include/eigen3 -lSDL2 -lSDL2_image -lnoise -ljsoncpp -o $(executable_name)
 
 # Not a target:
 .SUFFIXES:
@@ -265,6 +265,6 @@ all: src/main.cpp
 # strcache performance: lookups = 25 / hit rate = 28%
 # hash-table stats:
 # Load=18/8192=0%, Rehash=0, Collisions=0/25=0%
-# Finished Make data base on Wed May 18 00:27:40 2022
+# Finished Make data base on Wed May 25 21:06:20 2022
 
  

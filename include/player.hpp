@@ -54,6 +54,5 @@ void Player::accelerate(float add_value, double delta_time)
     {
         player_speed += add_value;
         magnitude = 0.5 * delta_time * log(player_speed+1);
-        //cout << magnitude <<"-" <<player_speed <<"\n";
     }
 }

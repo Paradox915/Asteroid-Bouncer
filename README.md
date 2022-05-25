@@ -7,3 +7,4 @@ dependincys:
  - SDL2
  - SDL2_image
  - jsoncpp
+ - Eigen
