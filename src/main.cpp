@@ -8,6 +8,7 @@ Hugh Smith
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <SDL2/SDL_timer.h> 
+#include <SDL2/SDL_ttf.h>
 #include <map>
 #include<fstream>
 #include<json/json.h>
@@ -71,6 +72,12 @@ bool init_sdl()
 	if (window == NULL)
 	{
 		cout << "failed it create window";
+		result = false;
+	}
+
+	if(TTF_Init() < 0) // returns - on fail
+	{
+		cout << "failed it intalise SDL TTF";
 		result = false;
 	}
 	
@@ -268,6 +275,36 @@ void render(Entity ent)
 	SDL_DestroyTexture(tex);
 }
 
+void render_score(int score)
+{
+	
+	TTF_Font* Sans = TTF_OpenFont("font.ttf", 24);
+	if ( !Sans ) {
+		cout << "Failed to load font: " << TTF_GetError() << endl;
+	}
+	SDL_Color White = {107, 139, 164};
+
+	string s_score = to_string(score);
+
+	SDL_Surface* surfaceMessage =
+	TTF_RenderText_Solid(Sans, s_score.c_str() , White);
+
+	// now you can convert it into a texture
+	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+	SDL_Rect Message_rect; //create a rect
+	Message_rect.x = 10;  //controls the rect's x coordinate 
+	Message_rect.y = 0; // controls the rect's y coordinte
+	Message_rect.w = 100; // controls the width of the rect
+	Message_rect.h = 130; // controls the height of the rect
+
+
+	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+	//SDL_RenderCopyEx(renderer, Message, NULL, &Message_rect, 0, NULL, SDL_FLIP_NONE); 
+	SDL_FreeSurface(surfaceMessage);
+	SDL_DestroyTexture(Message);
+}
+
 void render_player(Entity ent)
 {
 	/*render the player to the screen*/
@@ -324,6 +361,9 @@ void render_objects(list<Entity> objects_to_render)
 	asteroids_in_range(player.x-WIDTH/2,player.x+WIDTH/2,player.y-HEIGHT/2,player.y+HEIGHT/2,GRID_SIZE);
 	// for multiple rendering 
 	render_player(player.move());
+
+	render_score(player.score);
+
 	SDL_RenderPresent(renderer);
 }
 

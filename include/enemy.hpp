@@ -8,6 +8,7 @@ Hugh Smith
 #include <cmath>
 #include "spaceships.hpp"
 #include <Eigen/Dense>
+
 using Eigen::Vector2f;
 class Enemy : public Ship
 {

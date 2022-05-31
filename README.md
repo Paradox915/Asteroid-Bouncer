@@ -8,3 +8,4 @@ dependincys:
  - SDL2_image
  - jsoncpp
  - Eigen
+ - SDL_TTF
