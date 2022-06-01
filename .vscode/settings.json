@@ -70,6 +70,8 @@
         "variant": "cpp",
         "valarray": "cpp",
         "any": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "core": "cpp",
+        "*.inc": "cpp"
     }
 }

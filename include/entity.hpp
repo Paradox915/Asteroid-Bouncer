@@ -12,10 +12,13 @@ public:
     float rotation;
     // The texture
     const char* texture;
+    bool animated;
+
     bool check_collision_asteroids(SDL_Surface* game_map, int threshold);
     // constructor
-    Entity(float x_input, float y_input, float rot_input, const char* texture_input)
+    Entity(float x_input, float y_input, float rot_input, const char* texture_input, bool animated_input = false)
     {
+        animated = animated_input;
         x = x_input;
         y = y_input;
         rotation = rot_input;

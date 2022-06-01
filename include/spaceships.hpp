@@ -18,7 +18,7 @@ public:
   int health; // The health
   
   // constructor
-  Ship(float x_input, float y_input, const char* texture_input, float magnitude_input, float rotation_input, float health_input):Entity(x_input, y_input, rotation_input, texture_input){
+  Ship(float x_input, float y_input, const char* texture_input, float magnitude_input, float rotation_input, float health_input, bool animated_input = false):Entity(x_input, y_input, rotation_input, texture_input, animated_input){
     magnitude = magnitude_input;
     health = health_input;
   }
@@ -27,7 +27,7 @@ public:
 Entity Ship::get_entity()
     {
       /*get an entity of the ship*/
-      return Entity(x, y, rotation, texture);
+      return Entity(x, y, rotation, texture, animated);
     }
 
 Entity Ship::move()

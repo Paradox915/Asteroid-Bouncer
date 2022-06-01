@@ -274,17 +274,56 @@ void render(Entity ent)
 	SDL_RenderCopyEx(renderer, tex, NULL, &dest, ent.rotation, NULL, SDL_FLIP_NONE); 
 	SDL_DestroyTexture(tex);
 }
+void render_animation(Entity ent, int size = 16, int frames=3, int speed = 100)
+{
+	/*render stuf to the screen but animated*/
+	surface = IMG_Load(ent.texture); 
 
+	// loads image to our graphics hardware memory. 
+	tex = SDL_CreateTextureFromSurface(renderer, surface); 
+
+	// clears main-memory 
+	SDL_FreeSurface(surface); 
+
+	// let us control our image position 
+	// so that we can move it with our keyboard. 
+	SDL_Rect dest; 
+
+	// connects our texture with dest to control position 
+	SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h); 
+
+	// adjust height and width of our image box. 
+	dest.w *= 1; 
+	dest.h *= 3; 
+
+	// sets initial x-position of object 
+	dest.x = (0 - dest.w) / 2; 
+
+	// sets initial y-position of object 
+	dest.y = (0 - dest.h) / 2; 
+
+	float new_x = WIDTH/2 + (player.x - ent.x);
+	float new_y = HEIGHT/2 + (player.y - ent.y);
+	dest.x += new_x;
+	dest.y += new_y;
+
+	int ticks = SDL_GetTicks();
+	int seconds = ticks / speed;		
+	int sprite = seconds % frames;
+	SDL_Rect srcrect = {sprite*size, 0, size, size};
+	SDL_RenderCopyEx(renderer, tex, &srcrect, &dest, ent.rotation, NULL, SDL_FLIP_NONE); 
+	SDL_DestroyTexture(tex);
+}
 void render_score(int score)
 {
 	
-	TTF_Font* Sans = TTF_OpenFont("font.ttf", 24);
+	TTF_Font* Sans = TTF_OpenFont("font.ttf", 15);
 	if ( !Sans ) {
 		cout << "Failed to load font: " << TTF_GetError() << endl;
 	}
 	SDL_Color White = {107, 139, 164};
 
-	string s_score = to_string(score);
+	string s_score = "score :"+to_string(score)+" heath :"+to_string(player.health);
 
 	SDL_Surface* surfaceMessage =
 	TTF_RenderText_Solid(Sans, s_score.c_str() , White);
@@ -293,10 +332,10 @@ void render_score(int score)
 	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
 
 	SDL_Rect Message_rect; //create a rect
-	Message_rect.x = 10;  //controls the rect's x coordinate 
+	Message_rect.x = 20;  //controls the rect's x coordinate 
 	Message_rect.y = 0; // controls the rect's y coordinte
-	Message_rect.w = 100; // controls the width of the rect
-	Message_rect.h = 130; // controls the height of the rect
+	Message_rect.w = 400; // controls the width of the rect
+	Message_rect.h = 40; // controls the height of the rect
 
 
 	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
@@ -354,7 +393,11 @@ void render_objects(list<Entity> objects_to_render)
 	SDL_RenderClear(renderer); 
 	for(Entity object : objects_to_render)
 	{
-		render(object);
+		if(object.animated == true){
+			render_animation(object);
+		}else{
+			render(object);
+		}
 	}
 
 	// render asteroids
@@ -381,9 +424,13 @@ void stop()
 
 int main(int argc, char* args[])
 {		
-	Enemy one(960,540,"sprites/enemy.png",90,100, 1);
-	Enemy two(960,500,"sprites/enemy.png",0,100, 1.2);
+	Enemy one(960,540,"sprites/enemy_sprite_sheet.png",0,100, 1);
+	Enemy two(960,500,"sprites/enemy_sprite_sheet.png",90,100, 1);
 	list<Enemy> enemys;
+	for(int i = 0; i < 30; i++)
+	{
+		enemys.push_front(Enemy(960 + 10*i,540,"sprites/enemy_sprite_sheet.png",i,100, 1));
+	}
 	enemys.push_front(one);
 	enemys.push_front(two);
 	bool gameRunning = init_sdl();
@@ -438,7 +485,7 @@ int main(int argc, char* args[])
 		typedef list<Enemy> Cont2;
 		for( Cont2::iterator i = enemys.begin(); i != enemys.end(); ++i ) {
 			Enemy & s(*i);
-			s.boids(enemys);
+			s.boids(enemys, player);
 			objects.push_front(s.move());
 		}
 		render_objects(objects);

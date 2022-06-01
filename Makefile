@@ -8,4 +8,4 @@ executable_name = asteroid-bouncer
 
 # compile the exacutable
 all : $(file)
-	g++ $(file) -g -I/usr/include/eigen3 -lSDL2 -lSDL2_image -ljsoncpp -lSDL2_ttf -o $(executable_name)
+	g++ $(file) -g -lSDL2 -lSDL2_image -ljsoncpp -lSDL2_ttf -o $(executable_name)
