@@ -9,6 +9,9 @@ Hugh Smith
 
 class Player : public Ship
 {
+    /*
+    The class for the player
+    */
 private:
     int left_right = 1;
     float lazer_x_offset = 18;
@@ -33,8 +36,15 @@ public:
 
 Bullet Player::shoot()
 {
-    /*shooting*/
-    Bullet bullet(x, y,"",10, rotation, 0, 0);
+    /*
+    shooting
+
+    make the player shoot, this is a mutator method
+
+    @param none
+    @returns none
+    */
+    Bullet bullet(x, y,"",10, rotation, 10, 0);
     float rad_rot = fmod(rotation, 360);
     rad_rot *= PI/180;
     bullet.damage = 0.5;
@@ -49,7 +59,12 @@ Bullet Player::shoot()
 
 void Player::accelerate(float add_value, double delta_time)
 {
-    /*accelerate the ship*/
+    /*
+    accelerate the ship
+
+    @param speed increase, delta time
+    @returns void
+    */
     if(player_speed + add_value <= max_speed && player_speed + add_value >= min_speed)
     {
         player_speed += add_value;

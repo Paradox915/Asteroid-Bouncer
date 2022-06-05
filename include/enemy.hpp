@@ -10,6 +10,10 @@ Hugh Smith
 
 class Enemy : public Ship
 {
+    /*
+    Enemy class for the basic enimys
+    inherits from spaceship class
+    */
 private:
     std::list<Enemy> get_close_enemys(std::list<Enemy> others);
     void cohesion(std::list<Enemy> close_enemys);
@@ -27,8 +31,12 @@ private:
 
     float player_chasestrength = 0.3;
 
+
 public:
     void boids(std::list<Enemy> others, Player player);
+
+    int time_of_death = -2;
+    int time_of_explosion = -2;
   // constructor
   Enemy(float x_input, float y_input, const char* texture_input, float rotation_input, float health_input, float speed_input, bool animated_input = true):Ship(x_input, y_input, texture_input, speed_input, rotation_input, health_input, animated_input){
   }
@@ -37,7 +45,10 @@ public:
 void Enemy::boids(std::list<Enemy> others, Player player)
 {
     /*
-    do shit
+    The main boids function for the flocking movment of the enemys
+
+    @param list of all enemys, the player
+    @returns void
     */
    /*
     get all close ememys
@@ -93,7 +104,12 @@ void Enemy::boids(std::list<Enemy> others, Player player)
 
 float Enemy::distance_between_enemys(Enemy one, Enemy two)
 {
-    /*get the distance between 2 enemys*/
+    /*
+    get the distance between two enemys
+
+    @param enemys * 2
+    @returns distance between the 2 as a float
+    */
     return sqrt(pow(one.x - two.x, 2) + pow(one.y - two.y, 2));
 }
 
@@ -103,6 +119,9 @@ void Enemy::cohesion(std::list<Enemy> close_enemys)
     caculate the force to apply based on cohesion 
     and return a pointer to the direction and magnitude.
     steer to move toward the average position of local flockmates
+
+    @param list of enemys
+    @returns void
     */
    // get avarge position of the close fellas
     float average_x = 0;
@@ -143,6 +162,9 @@ void Enemy::alignment(std::list<Enemy> close_enemys)
     caculate the force to apply based on cohesion 
     and return a pointer to the direction and magnitude.
     steer towards the average heading of local flockmates 
+
+    @params list of enemys
+    @returns void
     */
 
     float avarge_rot;
@@ -151,7 +173,9 @@ void Enemy::alignment(std::list<Enemy> close_enemys)
     {
         avarge_rot += fello.rotation;
     }
+
     avarge_rot /= close_enemys.size();
+
 
     if(avarge_rot > rotation)
     {
@@ -168,6 +192,9 @@ void Enemy::separation(std::list<Enemy> close_enemys)
     caculate the force to apply based on cohesion 
     and return a pointer to the direction and magnitude.
     steer to avoid crowding local flockmates 
+
+    @params list of enemys
+    @returns void
     */
 
     // get avarge position of the close fellas
@@ -210,6 +237,9 @@ void Enemy::player_chase(Player player)
     caculate the force to apply based on cohesion 
     and return a pointer to the direction and magnitude.
     steer to avoid crowding local flockmates 
+
+    @prams player
+    @returns void
     */
 
     // get avarge position of the close fellas

@@ -10,6 +10,9 @@ Hugh Smith
 
 class Bullet : public Entity
 {
+  /*
+    the bullet class that inherits from the entity class 
+    */
 public:
   Entity move();
   Entity get_entity();
@@ -28,12 +31,20 @@ public:
 
 Entity Bullet::get_entity()
     {
-      /*get an entity of the Bullet*/
+      /*
+      get an entity representation of the object
+
+      @param none
+      @returns Entity class representation
+    */
       return Entity(x, y, rotation, texture);
     }
 
 Entity Bullet::move()
 {
+  /*
+    mutator method to move the object
+    */
     // move the obj
     float vertical = magnitude * cos(rotation*PI/180);
     float horizontal = -magnitude * sin(rotation*PI/180);

@@ -122,11 +122,6 @@ bool check_exit()
 	return true;
 }
 
-void game_loop()
-{
-	/*the core game loop*/
-}
-
 void player_scores_json(int score)
 {
 	/*get the players score into the json file*/
@@ -274,7 +269,7 @@ void render(Entity ent)
 	SDL_RenderCopyEx(renderer, tex, NULL, &dest, ent.rotation, NULL, SDL_FLIP_NONE); 
 	SDL_DestroyTexture(tex);
 }
-void render_animation(Entity ent, int size = 16, int frames=3, int speed = 100)
+void render_animation_16(Entity ent, int size = 16, int frames=3, int speed = 100)
 {
 	/*render stuf to the screen but animated*/
 	surface = IMG_Load(ent.texture); 
@@ -293,8 +288,8 @@ void render_animation(Entity ent, int size = 16, int frames=3, int speed = 100)
 	SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h); 
 
 	// adjust height and width of our image box. 
-	dest.w *= 1; 
-	dest.h *= 3; 
+	dest.w = 48; 
+	dest.h = 48;
 
 	// sets initial x-position of object 
 	dest.x = (0 - dest.w) / 2; 
@@ -394,7 +389,7 @@ void render_objects(list<Entity> objects_to_render)
 	for(Entity object : objects_to_render)
 	{
 		if(object.animated == true){
-			render_animation(object);
+			render_animation_16(object, object.size, object.frames);
 		}else{
 			render(object);
 		}
@@ -424,15 +419,11 @@ void stop()
 
 int main(int argc, char* args[])
 {		
-	Enemy one(960,540,"sprites/enemy_sprite_sheet.png",0,100, 1);
-	Enemy two(960,500,"sprites/enemy_sprite_sheet.png",90,100, 1);
 	list<Enemy> enemys;
-	for(int i = 0; i < 30; i++)
+	for(int i = 0; i < 20; i++)
 	{
-		enemys.push_front(Enemy(960 + 10*i,540,"sprites/enemy_sprite_sheet.png",i,100, 1));
+		enemys.push_front(Enemy(960 + 10*i,540,"sprites/enemy_sprite_sheet.png",i,1, 1));
 	}
-	enemys.push_front(one);
-	enemys.push_front(two);
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
 	Uint64 end_frame;
@@ -470,7 +461,6 @@ int main(int argc, char* args[])
 			GRID_SIZE += 1;
 		if(kb[SDL_SCANCODE_MINUS] && GRID_SIZE > 16)
 			GRID_SIZE -= 1;
-		game_loop();
 
 		typedef list<Bullet> Cont;
 		for( Cont::iterator i = bullets.begin(); i != bullets.end(); ++i ) {
@@ -485,8 +475,43 @@ int main(int argc, char* args[])
 		typedef list<Enemy> Cont2;
 		for( Cont2::iterator i = enemys.begin(); i != enemys.end(); ++i ) {
 			Enemy & s(*i);
+
+			if(SDL_GetTicks()/100 > s.time_of_explosion + s.frames && s.time_of_explosion != -2)
+			{
+				i = enemys.erase(i);
+				player.score += 1;
+			}
+
+			if(s.time_of_explosion == -2){
 			s.boids(enemys, player);
 			objects.push_front(s.move());
+			}else
+			{
+				objects.push_front(s.get_entity());
+			}
+
+			if(SDL_GetTicks()/100 > s.time_of_death + s.frames && s.time_of_death != -2 && s.time_of_explosion == -2)
+			{
+				s.texture = "sprites/explosion.png";
+				s.frames = 20;
+				s.time_of_death = -1;//SDL_GetTicks()/100;
+				s.time_of_explosion = SDL_GetTicks()/100;
+			}
+
+			for(Bullet bullet : bullets)
+			{
+				if(s.check_collision(bullet.x, bullet.y))
+				{
+					s.health -= bullet.damage;
+					if(s.health <= 0 && s.time_of_death == -2){
+					s.texture = "sprites/enemy_crack_sprite_sheet.png";
+					s.frames = 12;
+					s.time_of_death = SDL_GetTicks()/100;
+					}
+				}
+			}
+			// cout << s.time_of_explosion <<"\n";
+			
 		}
 		render_objects(objects);
 		// check if exit

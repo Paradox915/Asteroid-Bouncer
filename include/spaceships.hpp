@@ -10,6 +10,9 @@ Hugh Smith
 
 class Ship : public Entity
 {
+  /*
+    basic ship class that inherits from the entity class
+    */
 public:
   Entity move();
   Entity get_entity();
@@ -27,11 +30,14 @@ public:
 Entity Ship::get_entity()
     {
       /*get an entity of the ship*/
-      return Entity(x, y, rotation, texture, animated);
+      return Entity(x, y, rotation, texture, animated, size, frames);
     }
 
 Entity Ship::move()
 {
+    /*
+    mutator method to move the ship
+    */
     // move the obj
     float vertical = magnitude * cos(rotation*PI/180);
     float horizontal = -magnitude * sin(rotation*PI/180);

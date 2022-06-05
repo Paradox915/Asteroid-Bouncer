@@ -74,6 +74,12 @@ void set_pixel_colour(SDL_Surface* game_map,int x, int y, int value)
 
 int get_pixel_darkness(SDL_Surface* game_map, int x, int y)
 {
+    /*
+    get how dark a pixel is
+
+    @param game map, position
+    @returns int of the brightness
+    */
 	/*return how dark a pixel is*/
     if(x < game_map->w && y < game_map->h && x > 0 && y > 0){
         SDL_Color rgb;
