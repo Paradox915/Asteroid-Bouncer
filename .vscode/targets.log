@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jun  6 00:07:19 2022
+# Make data base, printed on Mon Jun  6 22:25:21 2022
 
 # Variables
 
@@ -17,7 +17,7 @@ LC_ALL = C
 # environment
 NO_AT_BRIDGE = 1
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-472fa062-8023-421a-a6d2-907a8ccd4648.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-ac20583c-426b-4416-a754-aca4cb5fa9b6.sock
 # environment
 VSCODE_CWD = /home/hugh
 # environment
@@ -79,7 +79,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 1447370
+VSCODE_PID = 84895
 # environment
 XDG_SESSION_TYPE = tty
 # automatic
@@ -119,7 +119,7 @@ MOTD_SHOWN = pam
 # automatic
 ^F = $(notdir $^)
 # environment
-INVOCATION_ID = 742d4b27b9344aa6b9fc4c64f0afaffb
+INVOCATION_ID = 77d7cc93e1584a7aa35800f573e48be2
 # environment
 VSCODE_LOG_NATIVE = false
 # automatic
@@ -139,7 +139,7 @@ XDG_VTNR = 1
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 441
+SYSTEMD_EXEC_PID = 445
 # environment
 DISPLAY = :0
 # environment
@@ -207,7 +207,7 @@ Makefile:
 # Not a target:
 src/main.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-06 00:01:06.931287306
+#  Last modified 2022-06-06 12:39:26.720703524
 #  File has been updated.
 #  Successfully updated.
 
@@ -265,6 +265,6 @@ all: src/main.cpp
 # strcache performance: lookups = 27 / hit rate = 25%
 # hash-table stats:
 # Load=20/8192=0%, Rehash=0, Collisions=0/27=0%
-# Finished Make data base on Mon Jun  6 00:07:19 2022
+# Finished Make data base on Mon Jun  6 22:25:21 2022
 
  

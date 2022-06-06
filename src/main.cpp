@@ -422,7 +422,7 @@ int main(int argc, char* args[])
 	list<Enemy> enemys;
 	for(int i = 0; i < 20; i++)
 	{
-		enemys.push_front(Enemy(960 + 10*i,540,"sprites/enemy_sprite_sheet.png",i,1, 1));
+		enemys.push_front(Enemy(1100,900,"sprites/enemy_sprite_sheet.png",i,1, 1));
 	}
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
@@ -490,6 +490,27 @@ int main(int argc, char* args[])
 				objects.push_front(s.get_entity());
 			}
 
+			// check for collision with asteroids
+			if(s.check_collision_asteroids(game_map, THRESHHOLD) == true && s.time_of_explosion == -2)
+			{
+				s.texture = "sprites/explosion.png";
+				s.frames = 20;
+				s.time_of_death = -1;//SDL_GetTicks()/100;
+				s.time_of_explosion = SDL_GetTicks()/100;
+				hit_asteroid(game_map, s.x, s.y, 50, 100);
+			}
+
+			// check for collision with player
+			if(s.check_collision(player.x, player.y) == true && s.time_of_explosion == -2)
+			{
+				s.texture = "sprites/explosion.png";
+				s.frames = 20;
+				s.time_of_death = -1;//SDL_GetTicks()/100;
+				s.time_of_explosion = SDL_GetTicks()/100;
+				hit_asteroid(game_map, s.x, s.y, 50, 100);
+				player.health -= 10;
+			}
+
 			if(SDL_GetTicks()/100 > s.time_of_death + s.frames && s.time_of_death != -2 && s.time_of_explosion == -2)
 			{
 				s.texture = "sprites/explosion.png";
@@ -518,6 +539,7 @@ int main(int argc, char* args[])
 		gameRunning = check_exit();
 		if(player.check_collision_asteroids(game_map, THRESHHOLD))
 		{
+			player.health -= 1;
 			hit_asteroid(game_map, player.x, player.y, 30, 100);
 		}
 	}
