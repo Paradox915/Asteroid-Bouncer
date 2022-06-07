@@ -19,21 +19,25 @@ private:
     void cohesion(std::list<Enemy> close_enemys);
     void alignment(std::list<Enemy> close_enemys);
     void separation(std::list<Enemy> close_enemys);
+    void asteroid_avoidence(float average_x, float average_y);
     void player_chase(Player player);
     float distance_between_enemys(Enemy one, Enemy two);
 
-    float cohesion_strength = 0.1;
+    float cohesion_strength = 0.001;
     float cohesion_distance = 150;
-    float alingment_strength = 0.07;
-    float alingment_distance = 40;
-    float seperation_strength = 20;
-    float seperation_distance = 70;
+    float alingment_strength = 0.7;
+    float alingment_distance = 60;
+    float seperation_strength = 7;
+    float seperation_distance = 40;
 
-    float player_chasestrength = 0.3;
+    float asteroid_strength = 3;
+    float asteroid_distance = 10;
+
+    float player_chasestrength = 0.03;//0;
 
 
 public:
-    void boids(std::list<Enemy> others, Player player);
+    void boids(std::list<Enemy> others, Player player, std::list<float> x_asteroids, std::list<float> y_asteroids);
 
     int time_of_death = -2;
     int time_of_explosion = -2;
@@ -42,7 +46,7 @@ public:
   }
 };
 
-void Enemy::boids(std::list<Enemy> others, Player player)
+void Enemy::boids(std::list<Enemy> others, Player player, std::list<float> x_asteroids, std::list<float> y_asteroids)
 {
     /*
     The main boids function for the flocking movment of the enemys
@@ -78,6 +82,29 @@ void Enemy::boids(std::list<Enemy> others, Player player)
         }
     }
 
+    // asteroid avidance
+    float average_x;
+    float average_y;
+    int close_size = 0;
+    auto index_x = x_asteroids.begin();
+    auto index_y = y_asteroids.begin();
+    for(int i = 0; i < x_asteroids.size(); i++)
+    {
+        float distance_between = sqrt(pow(x - *index_x, 2) + pow(y - *index_y, 2)); 
+        if(distance_between < asteroid_distance)
+        {
+            close_size ++;
+            average_x += *index_x;
+            average_y += *index_y;
+        }
+
+        advance(index_x, 1);
+        advance(index_y, 1);
+    }
+    average_x /= close_size;
+    average_y /= close_size;
+    asteroid_avoidence(average_x, average_y);
+
     float start_x = x;
     float start_y = y;
 
@@ -94,11 +121,8 @@ void Enemy::boids(std::list<Enemy> others, Player player)
     player_chase(player);
 
     // caculate new rotation based off the movement
-
     float angle = atan2(start_y-y,start_x-x);
     rotation = angle * (180/PI) + 90;
-    //int rand_angle = rand() % 10 + -10;
-    //rotation +=rand_angle;
    
 }
 
@@ -212,24 +236,76 @@ void Enemy::separation(std::list<Enemy> close_enemys)
     //cout << average_x << ",- " << average_y << "\n";
     float x_delta = x - average_x;
     float y_delta = y - average_y;
-    
-    if(x_delta < 0){
-        x_delta = -1;
-    }else
-    {
-        x_delta = 1;
-    }
 
-    if(y_delta < 0){
-        y_delta = -1;
-    }else
-    {
-        y_delta = 1;
+    float angle = atan2(y_delta, x_delta);
+    angle = rotation - (-angle * (180/PI) + 90);
+
+    if(angle > 180){
+        rotation += seperation_strength;
+    }else{
+        rotation -= seperation_strength;
     }
     
-    x += x_delta*seperation_strength;
-    y += y_delta*seperation_strength;
+    // if(x_delta < 0){
+    //     x_delta = -1;
+    // }else
+    // {
+    //     x_delta = 1;
+    // }
+
+    // if(y_delta < 0){
+    //     y_delta = -1;
+    // }else
+    // {
+    //     y_delta = 1;
+    // }
+    
+    // x += x_delta*seperation_strength;
+    // y += y_delta*seperation_strength;
 }
+
+void Enemy::asteroid_avoidence(float average_x, float average_y)
+{
+    /*
+    caculate the force to apply based on cohesion 
+    and return a pointer to the direction and magnitude.
+    steer to avoid crowding local flockmates 
+
+    @params list of enemys
+    @returns void
+    */
+
+    //cout << average_x << ",- " << average_y << "\n";
+    float x_delta = x - average_x;
+    float y_delta = y - average_y;
+
+    float angle = atan2(y_delta, x_delta);
+    angle = rotation - (-angle * (180/PI) + 90);
+
+    if(angle > 180){
+        rotation += asteroid_strength;
+    }else{
+        rotation -= asteroid_strength;
+    }
+    
+    // if(x_delta < 0){
+    //     x_delta = -1;
+    // }else
+    // {
+    //     x_delta = 1;
+    // }
+
+    // if(y_delta < 0){
+    //     y_delta = -1;
+    // }else
+    // {
+    //     y_delta = 1;
+    // }
+    
+    // x += x_delta*seperation_strength;
+    // y += y_delta*seperation_strength;
+}
+
 
 void Enemy::player_chase(Player player)
 {

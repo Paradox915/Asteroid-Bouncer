@@ -36,6 +36,9 @@ SDL_Surface* game_map = IMG_Load(map_file);
 
 float THRESHHOLD = 217;
 
+list<float> x_asteroids;
+list<float> y_asteroids;
+
 Uint64 frame_now = SDL_GetPerformanceCounter();
 Uint64 frame_last = 0;
 double delta_time = 0;
@@ -222,14 +225,19 @@ void asteroids_in_range(float xmin, float xmax, float ymin, float ymax, float gr
 	ymin = floor(ymin / grid_size) * grid_size;
 	ymax = ceil(ymax / grid_size) * grid_size;
 
+	x_asteroids.clear();
+	y_asteroids.clear();
 	int num;
 	for(float x = xmin; x <= xmax; x+=grid_size)
 	{
 		for(float y = ymin; y <= ymax; y+=grid_size)
 		{
 			num = get_asteroid_case(x, y, grid_size);
-			if(num != 0 && num != 15)
+			if(num != 0 && num != 15){
 				render_asteroids(num,x,y, GRID_SIZE/16);
+				x_asteroids.push_front(x);
+				y_asteroids.push_front(y);
+				}
 		}
 	}
 }
@@ -422,7 +430,7 @@ int main(int argc, char* args[])
 	list<Enemy> enemys;
 	for(int i = 0; i < 20; i++)
 	{
-		enemys.push_front(Enemy(1100,900,"sprites/enemy_sprite_sheet.png",i,1, 1));
+		enemys.push_front(Enemy(1100+5*i,900 + 5*i,"sprites/enemy_sprite_sheet.png",i,1, 1));
 	}
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
@@ -483,7 +491,7 @@ int main(int argc, char* args[])
 			}
 
 			if(s.time_of_explosion == -2){
-			s.boids(enemys, player);
+			s.boids(enemys, player, x_asteroids, y_asteroids);
 			objects.push_front(s.move());
 			}else
 			{
@@ -511,13 +519,6 @@ int main(int argc, char* args[])
 				player.health -= 10;
 			}
 
-			if(SDL_GetTicks()/100 > s.time_of_death + s.frames && s.time_of_death != -2 && s.time_of_explosion == -2)
-			{
-				s.texture = "sprites/explosion.png";
-				s.frames = 20;
-				s.time_of_death = -1;//SDL_GetTicks()/100;
-				s.time_of_explosion = SDL_GetTicks()/100;
-			}
 
 			for(Bullet bullet : bullets)
 			{
@@ -525,9 +526,11 @@ int main(int argc, char* args[])
 				{
 					s.health -= bullet.damage;
 					if(s.health <= 0 && s.time_of_death == -2){
-					s.texture = "sprites/enemy_crack_sprite_sheet.png";
-					s.frames = 12;
-					s.time_of_death = SDL_GetTicks()/100;
+
+					s.texture = "sprites/explosion.png";
+					s.frames = 20;
+					s.time_of_death = -1;//SDL_GetTicks()/100;
+					s.time_of_explosion = SDL_GetTicks()/100;
 					}
 				}
 			}
