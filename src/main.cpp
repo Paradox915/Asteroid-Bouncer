@@ -46,7 +46,7 @@ double delta_time = 0;
 // "x y", add_value
 std::map<string, int> perlin_add_values { {"0 0", 10}, {"1 0", 10}, {"0 1", 10}, };
 //perlin_add_values["hfg"] = 4;
-Player player(960,540,"sprites/player/funky_ship_sprtesheet (1).png",0,100, 3, 0.2);
+Player player(960,540,"sprites/player/funky_ship_sprtesheet (1).png",0,100, 1.8, 0.2);
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -428,9 +428,9 @@ void stop()
 int main(int argc, char* args[])
 {		
 	list<Enemy> enemys;
-	for(int i = 0; i < 20; i++)
+	for(int i = 0; i < 80; i++)
 	{
-		enemys.push_front(Enemy(1100+5*i,900 + 5*i,"sprites/enemy_sprite_sheet.png",i,1, 1));
+		enemys.push_front(Enemy(900+10*i,900 + 0*i,"sprites/enemy_sprite_sheet.png",i,1, 2));
 	}
 	bool gameRunning = init_sdl();
 	Uint64 start_frame = 0;
@@ -445,7 +445,6 @@ int main(int argc, char* args[])
 		frame_last = frame_now;
    		frame_now = SDL_GetPerformanceCounter();
    		delta_time = (double)((frame_now-frame_last)*1000 / (double)SDL_GetPerformanceFrequency());
-
 		
 		// /*get any inputs from the user*/
 		SDL_PumpEvents();

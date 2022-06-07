@@ -30,10 +30,10 @@ private:
     float seperation_strength = 7;
     float seperation_distance = 40;
 
-    float asteroid_strength = 3;
-    float asteroid_distance = 10;
+    float asteroid_strength = 7;
+    float asteroid_distance = 30;
 
-    float player_chasestrength = 0.03;//0;
+    float player_chasestrength = 0.07;//0;
 
 
 public:
@@ -90,9 +90,11 @@ void Enemy::boids(std::list<Enemy> others, Player player, std::list<float> x_ast
     auto index_y = y_asteroids.begin();
     for(int i = 0; i < x_asteroids.size(); i++)
     {
-        float distance_between = sqrt(pow(x - *index_x, 2) + pow(y - *index_y, 2)); 
+        float distance_between = sqrt(pow(x - *index_x, 2) + pow(y - *index_y, 2));
+        // cout << distance_between << "\n";
         if(distance_between < asteroid_distance)
         {
+            
             close_size ++;
             average_x += *index_x;
             average_y += *index_y;
@@ -101,9 +103,12 @@ void Enemy::boids(std::list<Enemy> others, Player player, std::list<float> x_ast
         advance(index_x, 1);
         advance(index_y, 1);
     }
-    average_x /= close_size;
-    average_y /= close_size;
-    asteroid_avoidence(average_x, average_y);
+    
+    if(close_size > 0){
+        average_x /= close_size;
+        average_y /= close_size;
+        asteroid_avoidence(average_x, average_y);
+    }
 
     float start_x = x;
     float start_y = y;
@@ -275,7 +280,6 @@ void Enemy::asteroid_avoidence(float average_x, float average_y)
     @returns void
     */
 
-    //cout << average_x << ",- " << average_y << "\n";
     float x_delta = x - average_x;
     float y_delta = y - average_y;
 
@@ -302,8 +306,8 @@ void Enemy::asteroid_avoidence(float average_x, float average_y)
     //     y_delta = 1;
     // }
     
-    // x += x_delta*seperation_strength;
-    // y += y_delta*seperation_strength;
+    // x += x_delta;
+    // y += y_delta;
 }
 
 
