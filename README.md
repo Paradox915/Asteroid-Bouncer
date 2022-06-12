@@ -9,3 +9,4 @@ dependincys:
  - SDL2_image
  - jsoncpp
  - SDL_TTF
+ - SDL_mixer

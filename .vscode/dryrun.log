@@ -1,5 +1,5 @@
 make all --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/hugh/programing/c++/Asteroid-Bouncer'
-g++ src/main.cpp -g -lSDL2 -lSDL2_image -ljsoncpp -lSDL2_ttf -o asteroid-bouncer
+g++ src/main.cpp -g -lSDL2 -lSDL2_image -lSDL2_mixer -ljsoncpp -lSDL2_ttf -o asteroid-bouncer
 make: Leaving directory '/home/hugh/programing/c++/Asteroid-Bouncer'
  

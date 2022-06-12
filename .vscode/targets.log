@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue Jun  7 17:05:39 2022
+# Make data base, printed on Sun Jun 12 17:31:00 2022
 
 # Variables
 
@@ -17,7 +17,7 @@ LC_ALL = C
 # environment
 NO_AT_BRIDGE = 1
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-d167bb23-50d9-4e93-b6e3-0cddacc852e7.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-c905c417-ef5e-4e9a-a22c-40a2545ad2f0.sock
 # environment
 VSCODE_CWD = /home/hugh
 # environment
@@ -36,8 +36,6 @@ PWD = /home/hugh/programing/c++/Asteroid-Bouncer
 %D = $(patsubst %/,%,$(dir $%))
 # environment
 MAIL = /var/spool/mail/hugh
-# environment
-OLDPWD = /home/hugh/dwm_rice/themes
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
@@ -45,7 +43,7 @@ VSCODE_LOG_STACK = false
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = /home/hugh/.config/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
+VSCODE_CODE_CACHE_PATH = /home/hugh/.config/Code/CachedData/4af164ea3a06f701fe3e89a2bcbb421d2026b68f
 # environment
 LANG = C
 # environment
@@ -79,7 +77,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 107092
+VSCODE_PID = 32684
 # environment
 XDG_SESSION_TYPE = tty
 # automatic
@@ -103,7 +101,7 @@ MAKECMDGOALS := all
 # environment
 DOTNET_BUNDLE_EXTRACT_BASE_DIR = /home/hugh/.cache/dotnet_bundle_extract
 # environment
-SHLVL = 4
+SHLVL = 3
 # makefile (from 'Makefile', line 3)
 file = src/main.cpp
 # environment
@@ -119,7 +117,7 @@ MOTD_SHOWN = pam
 # automatic
 ^F = $(notdir $^)
 # environment
-INVOCATION_ID = 8b25fde34e764153aa4082257e1077a9
+INVOCATION_ID = 421ae1a56d2748d0a20aca8e8769fd12
 # environment
 VSCODE_LOG_NATIVE = false
 # automatic
@@ -139,7 +137,7 @@ XDG_VTNR = 1
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 436
+SYSTEMD_EXEC_PID = 469
 # environment
 DISPLAY = :0
 # environment
@@ -159,7 +157,7 @@ HOME = /home/hugh
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-8f18271f-1.67.2-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-8f18271f-1.68.0-main.sock
 # environment
 TERM = linux
 # environment
@@ -179,7 +177,7 @@ ELECTRON_NO_ATTACH_CONSOLE = 1
 # environment
 DOTNET_ROOT = /usr/share/dotnet
 # variable set hash-table stats:
-# Load=84/1024=8%, Rehash=0, Collisions=3/120=2%
+# Load=83/1024=8%, Rehash=0, Collisions=3/119=3%
 
 # Pattern-specific Variable Values
 
@@ -200,14 +198,14 @@ DOTNET_ROOT = /usr/share/dotnet
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-01 23:01:39.277081621
+#  Last modified 2022-06-12 13:41:45.277329342
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 src/main.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-07 08:17:07.204083145
+#  Last modified 2022-06-12 17:30:07.247820279
 #  File has been updated.
 #  Successfully updated.
 
@@ -243,7 +241,7 @@ all: src/main.cpp
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/13=8%
 #  recipe to execute (from 'Makefile', line 11):
-	g++ $(file) -g -lSDL2 -lSDL2_image -ljsoncpp -lSDL2_ttf -o $(executable_name)
+	g++ $(file) -g -lSDL2 -lSDL2_image -lSDL2_mixer -ljsoncpp -lSDL2_ttf -o $(executable_name)
 
 # Not a target:
 .SUFFIXES:
@@ -265,6 +263,6 @@ all: src/main.cpp
 # strcache performance: lookups = 27 / hit rate = 25%
 # hash-table stats:
 # Load=20/8192=0%, Rehash=0, Collisions=0/27=0%
-# Finished Make data base on Tue Jun  7 17:05:39 2022
+# Finished Make data base on Sun Jun 12 17:31:00 2022
 
  
