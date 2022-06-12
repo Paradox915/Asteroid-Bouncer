@@ -74,7 +74,8 @@ int shoot_channel = 3;
 int shoot_channel_volume = 5;
 
 //The music that will be played
-Mix_Music *Music_sound = NULL;
+Mix_Music *Music_sound_game = NULL;
+Mix_Music *Music_sound_menue = NULL;
 
 //The sound effects that will be used
 // enemys
@@ -145,13 +146,19 @@ bool load_soundeffects()
     bool result = true;
 
     //Load music
-    Music_sound = Mix_LoadMUS("audio/music/i_ruied_nit_finished_.mp3");
-    if( Music_sound == NULL )
+    Music_sound_game = Mix_LoadMUS("audio/music/i_ruied_nit_finished_.mp3");
+    if( Music_sound_game == NULL )
     {
         printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
         result = false;
     }
-    
+
+    Music_sound_menue = Mix_LoadMUS("audio/music/high_brow_fin.mp3");
+    if( Music_sound_menue == NULL )
+    {
+        printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+        result = false;
+    }
     //Load sound effects
     explosion_sound = Mix_LoadWAV("audio/explosion.wav");
     if( explosion_sound == NULL )
@@ -478,6 +485,31 @@ void render_score(int score)
 	SDL_DestroyTexture(Message);
 }
 
+void render_json_score(string score)
+{
+
+	SDL_Color White = {156, 53, 73};
+
+	string s_score = score;
+	SDL_Surface* surfaceMessage =
+	TTF_RenderText_Blended_Wrapped(Sans, s_score.c_str() , White, 0);
+
+	// now you can convert it into a texture
+	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+	SDL_Rect Message_rect; //create a rect
+	Message_rect.x = 250;  //controls the rect's x coordinate 
+	Message_rect.y = 400; // controls the rect's y coordinte
+	Message_rect.w = 150; // controls the width of the rect
+	Message_rect.h = 250; // controls the height of the rect
+
+
+	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+	//SDL_RenderCopyEx(renderer, Message, NULL, &Message_rect, 0, NULL, SDL_FLIP_NONE); 
+	SDL_FreeSurface(surfaceMessage);
+	SDL_DestroyTexture(Message);
+}
+
 void render_player(Entity ent)
 {
 	/*render the player to the screen*/
@@ -608,6 +640,8 @@ bool rungame()
 	Uint64 end_frame;
 	list<Bullet> bullets;
 	Uint32 time = 0;
+	//Play the music
+	Mix_PlayMusic(Music_sound_game, -1);
 
 	while(gameRunning == true)
 	{
@@ -620,7 +654,7 @@ bool rungame()
 		if( Mix_PlayingMusic() == 0 )
 		{
 			//Play the music
-			Mix_PlayMusic(Music_sound, -1);
+			Mix_PlayMusic(Music_sound_game, -1);
 		}
 		/*----------------------get any inputs from the user----------------------*/
 		SDL_PumpEvents();
@@ -754,11 +788,18 @@ int main(int argc, char* args[])
 {
 	bool running = (init_sdl() && load_soundeffects());
 	// menue screen
-	Entity back_ground(player_x,player_y,0,"misc/title_pagev2.png");
+	Entity back_ground(player_x,player_y,0,"sprites/menues/mainmenue.png");
+	string output = "";
 	while(running == true)
 	{
+		if( Mix_PlayingMusic() == 0 )
+		{
+			//Play the music
+			Mix_PlayMusic(Music_sound_menue, -1);
+		}
 		SDL_RenderClear(renderer); 
 		render_background(back_ground);
+		render_json_score(output);
 		SDL_RenderPresent(renderer);
 		SDL_PumpEvents();
 		kb = SDL_GetKeyboardState(NULL);
@@ -768,7 +809,31 @@ int main(int argc, char* args[])
 			running = rungame();
 			// add the player score
 			player_scores_json(player.score);
-		}
+		}else if(kb[SDL_SCANCODE_1]){
+			// play sound effect
+			Mix_PlayChannel(-1, click_sound, 0);
+			back_ground.texture = "sprites/menues/credits.png";
+			output = "";
+		}else if(kb[SDL_SCANCODE_2]){
+			// play sound effect
+			Mix_PlayChannel(-1, click_sound, 0);
+			back_ground.texture = "sprites/menues/scores.png";
+			ifstream i("database/player_scores.json", std::ifstream::binary);
+			Json::Value j;
+			i >> j;	
+			output = "";
+			for (auto it = j.begin(); it != j.end(); ++it)
+			{
+				output += it.key().asString() + "\n";
+				output += "    -" + (*it).asString() + "\n\n";
+			}
+			
+		}else if(kb[SDL_SCANCODE_3]){
+			// play sound effect
+			Mix_PlayChannel(-1, click_sound, 0);
+			back_ground.texture = "sprites/menues/mainmenue.png";
+			output = "";
+		}	
 		
 	}
 	stop();

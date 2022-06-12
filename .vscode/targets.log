@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun Jun 12 17:31:00 2022
+# Make data base, printed on Sun Jun 12 23:55:42 2022
 
 # Variables
 
@@ -17,7 +17,7 @@ LC_ALL = C
 # environment
 NO_AT_BRIDGE = 1
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-c905c417-ef5e-4e9a-a22c-40a2545ad2f0.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-40a940cb-d7a2-4472-8fcb-77bc1e67adfd.sock
 # environment
 VSCODE_CWD = /home/hugh
 # environment
@@ -36,6 +36,8 @@ PWD = /home/hugh/programing/c++/Asteroid-Bouncer
 %D = $(patsubst %/,%,$(dir $%))
 # environment
 MAIL = /var/spool/mail/hugh
+# environment
+OLDPWD = /home/hugh/dwm_rice/themes
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
@@ -77,7 +79,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 32684
+VSCODE_PID = 48528
 # environment
 XDG_SESSION_TYPE = tty
 # automatic
@@ -101,7 +103,7 @@ MAKECMDGOALS := all
 # environment
 DOTNET_BUNDLE_EXTRACT_BASE_DIR = /home/hugh/.cache/dotnet_bundle_extract
 # environment
-SHLVL = 3
+SHLVL = 4
 # makefile (from 'Makefile', line 3)
 file = src/main.cpp
 # environment
@@ -117,7 +119,7 @@ MOTD_SHOWN = pam
 # automatic
 ^F = $(notdir $^)
 # environment
-INVOCATION_ID = 421ae1a56d2748d0a20aca8e8769fd12
+INVOCATION_ID = 1bdfac7e121246fba83d1ad0f9140d97
 # environment
 VSCODE_LOG_NATIVE = false
 # automatic
@@ -137,7 +139,7 @@ XDG_VTNR = 1
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 469
+SYSTEMD_EXEC_PID = 435
 # environment
 DISPLAY = :0
 # environment
@@ -177,7 +179,7 @@ ELECTRON_NO_ATTACH_CONSOLE = 1
 # environment
 DOTNET_ROOT = /usr/share/dotnet
 # variable set hash-table stats:
-# Load=83/1024=8%, Rehash=0, Collisions=3/119=3%
+# Load=84/1024=8%, Rehash=0, Collisions=3/120=2%
 
 # Pattern-specific Variable Values
 
@@ -205,7 +207,7 @@ Makefile:
 # Not a target:
 src/main.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-12 17:30:07.247820279
+#  Last modified 2022-06-12 23:50:34.975062227
 #  File has been updated.
 #  Successfully updated.
 
@@ -263,6 +265,6 @@ all: src/main.cpp
 # strcache performance: lookups = 27 / hit rate = 25%
 # hash-table stats:
 # Load=20/8192=0%, Rehash=0, Collisions=0/27=0%
-# Finished Make data base on Sun Jun 12 17:31:00 2022
+# Finished Make data base on Sun Jun 12 23:55:42 2022
 
  
