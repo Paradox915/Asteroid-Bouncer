@@ -92,6 +92,11 @@ Mix_Chunk *click_sound = NULL;
 // functions
 bool init_sdl()
 {
+	/*
+	function to start sdl
+	@param void
+	@returns bool if error occured or not
+	*/
 	bool result = true;
 	/*Function to start and setup SDL*/
 	// initalise SDL
@@ -143,70 +148,79 @@ bool init_sdl()
 
 bool load_soundeffects()
 {
-    bool result = true;
+	/*
+	function to load the sound effects
+	@param void
+	@returns bool if error occured or not
+	*/
+	bool result = true;
 
-    //Load music
-    Music_sound_game = Mix_LoadMUS("audio/music/i_ruied_nit_finished_.mp3");
-    if( Music_sound_game == NULL )
-    {
-        printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
-        result = false;
-    }
+	//Load music
+	Music_sound_game = Mix_LoadMUS("audio/music/i_ruied_nit_finished_.mp3");
+	if( Music_sound_game == NULL )
+	{
+	printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+	result = false;
+	}
 
-    Music_sound_menue = Mix_LoadMUS("audio/music/high_brow_fin.mp3");
-    if( Music_sound_menue == NULL )
-    {
-        printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
-        result = false;
-    }
-    //Load sound effects
-    explosion_sound = Mix_LoadWAV("audio/explosion.wav");
-    if( explosion_sound == NULL )
-    {
-        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-        result = false;
-    }
+	Music_sound_menue = Mix_LoadMUS("audio/music/high_brow_fin.mp3");
+	if( Music_sound_menue == NULL )
+	{
+	printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+	result = false;
+	}
+	//Load sound effects
+	explosion_sound = Mix_LoadWAV("audio/explosion.wav");
+	if( explosion_sound == NULL )
+	{
+	printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+	result = false;
+	}
 
 	explosion_wall_sound = Mix_LoadWAV("audio/explosion_collision.wav");
-    if( explosion_wall_sound == NULL )
-    {
-        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-        result = false;
-    }
+	if( explosion_wall_sound == NULL )
+	{
+	printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+	result = false;
+	}
 
 	hit_sound = Mix_LoadWAV("audio/player/hitHurt.wav");
-    if( hit_sound == NULL )
-    {
-        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-        result = false;
-    }
+	if( hit_sound == NULL )
+	{
+	printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+	result = false;
+	}
 
 	shoot_sound = Mix_LoadWAV("audio/player/laserShoot.wav");
-    if( shoot_sound == NULL )
-    {
-        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-        result = false;
-    }
+	if( shoot_sound == NULL )
+	{
+	printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+	result = false;
+	}
 
 	click_sound = Mix_LoadWAV("audio/menue/blipSelect.wav");
-    if( click_sound == NULL )
-    {
-        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-        result = false;
-    }
+	if( click_sound == NULL )
+	{
+	printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+	result = false;
+	}
 
 
 	// change volumes
 	Mix_VolumeMusic(music_channel_volume);
 	Mix_Volume(explosion_channel, explosion_channel_volume);
 	Mix_Volume(shoot_channel, shoot_channel_volume);
-    return result;
+	return result;
 }
 
 void stop_sdl()
 {
 	
-	/*Function to stop SDL*/
+	/*
+	function to stop sdl
+	@param void
+	@returns void
+	*/
 
 	// destroy renderer 
 	SDL_DestroyRenderer(renderer); 
@@ -219,7 +233,11 @@ void stop_sdl()
 
 bool check_exit()
 {
-	/*check if the use wants to exit the program*/
+	/*
+	check if the user want to exit the program
+	@param void
+	@returns bool of wether they want to exit
+	*/
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{ 
@@ -234,7 +252,11 @@ bool check_exit()
 
 void player_scores_json(int score)
 {
-	/*get the players score into the json file*/
+	/*
+	get the players score into the json file
+	@param int of the players score
+	@returns void
+	*/
 	// read the file
 	ifstream i("database/player_scores.json", std::ifstream::binary);
 	Json::Value j;
@@ -250,19 +272,27 @@ void player_scores_json(int score)
 
 void hit_asteroid(SDL_Surface* game_map, int x, int y, int range, float stregnth)
 {
-	/*change the file in turms of a hit*/
+	/*
+	modify the map when the asteroid gets hit by something
+	@param SDL_Surface* game_map, int x, int y, int range, float stregnth
+	@returns none
+	*/
 	for(int i = x - range; i < x + range; i ++)
 	{
-	for(int j = y - range; j < y + range; j ++)
-	{
-		set_pixel_colour(game_map, i, j, 255);
-	}
+		for(int j = y - range; j < y + range; j ++)
+		{
+			set_pixel_colour(game_map, i, j, 255);
+		}
 	}
 }
 
 void render_asteroids(int case_num, float x, float y, float scale)
 {
-	/*render asteroids*/
+	/*
+	function to render the asteroids to the screen
+	@param int case_num, float x, float y, float scale
+	@returns void
+	*/
 	string num_string = to_string(case_num);
 	string input = "sprites/marching_squares/case_"+num_string+".png";
 	surface = IMG_Load(input.c_str());
@@ -299,8 +329,12 @@ void render_asteroids(int case_num, float x, float y, float scale)
 
 int get_asteroid_case(float x, float y, float box_size)
 {
-	/*get the case for the box with the bottom left corner 
-	at location x,y and size of box_size*/
+	/*
+	get the case for the box with the bottom left corner 
+	at location x,y and size of box_size
+	@param float x, float y, float box_size
+	@returns int of the case for that specific location
+	*/
 	int count = 0;
 	//cout << x << "  -  "<< y << " --: "<< get_pixel_darkness(game_map, x, y)<< "\n\n";
 	//cout << get_pixel_darkness(game_map, 200, 200)<< "\n";
@@ -325,6 +359,11 @@ int get_asteroid_case(float x, float y, float box_size)
 
 void asteroids_in_range(float xmin, float xmax, float ymin, float ymax, float grid_size)
 {
+	/*
+	loop through all of the asteroids on screen
+	@param float xmin, float xmax, float ymin, float ymax, float grid_size
+	@returns void
+	*/
 	// round to grid
 	xmin = floor(xmin / grid_size) * grid_size;
 	xmax = ceil(xmax / grid_size) * grid_size;
@@ -351,7 +390,11 @@ void asteroids_in_range(float xmin, float xmax, float ymin, float ymax, float gr
 
 void render(Entity ent)
 {
-	/*render stuf to the screen*/
+	/*
+	render entitys to the screen
+	@param Entity of what you want to remember
+	@returns void
+	*/
 
 	surface = IMG_Load(ent.texture); 
 
@@ -386,7 +429,11 @@ void render(Entity ent)
 }
 void render_background(Entity ent)
 {
-	/*render stuf to the screen*/
+	/*
+	render the background
+	@param Entity ent
+	@returns void
+	*/
 
 	surface = IMG_Load(ent.texture); 
 
@@ -421,6 +468,11 @@ void render_background(Entity ent)
 }
 void render_animation_16(Entity ent, int size = 16, int frames=3, int speed = 100)
 {
+	/*
+	render animations
+	@param Entity ent, int size = 16, int frames=3, int speed = 100
+	@returns void
+	*/
 	/*render stuf to the screen but animated*/
 	surface = IMG_Load(ent.texture); 
 
@@ -461,6 +513,11 @@ void render_animation_16(Entity ent, int size = 16, int frames=3, int speed = 10
 }
 void render_score(int score)
 {
+	/*
+	render score
+	@param int score
+	@returns void
+	*/
 
 	SDL_Color White = {107, 139, 164};
 
@@ -487,6 +544,11 @@ void render_score(int score)
 
 void render_json_score(string score)
 {
+	/*
+	render the json file
+	@param string score
+	@returns void
+	*/
 
 	SDL_Color White = {156, 53, 73};
 
@@ -512,7 +574,11 @@ void render_json_score(string score)
 
 void render_player(Entity ent)
 {
-	/*render the player to the screen*/
+	/*
+	render the player
+	@param Entity ent
+	@returns void
+	*/
 
 	surface = IMG_Load(ent.texture); 
 
@@ -554,7 +620,11 @@ void render_player(Entity ent)
 
 void render_objects(list<Entity> objects_to_render)
 {
-	/*render all objects in list*/
+	/*
+	render all objects in the list
+	@param list<Entity> objects
+	@returns void
+	*/
 	// clears the screen 
 	SDL_RenderClear(renderer); 
 	for(Entity object : objects_to_render)
@@ -578,7 +648,11 @@ void render_objects(list<Entity> objects_to_render)
 
 void stop()
 {
-	/*exit the program*/
+	/*
+	exit the game and opitinaly save the map
+	@param none
+	@returns void
+	*/
 	// stop sdl
 	stop_sdl();
 	// save the map
@@ -633,6 +707,11 @@ list<Enemy> spawn_enemys(list<Enemy> enemys, int max_enemys, Player player)
 
 bool rungame()
 {
+	/*
+	play the game
+	@param Entity ent, int size = 16, int frames=3, int speed = 100
+	@returns void
+	*/
 	list<Enemy> enemys;
 	bool gameRunning = true;
 	bool continue_game = true;
@@ -786,6 +865,11 @@ bool rungame()
 
 int main(int argc, char* args[])
 {
+	/*
+	The main file
+	@param none
+	@returns int
+	*/
 	bool running = (init_sdl() && load_soundeffects());
 	// menue screen
 	Entity back_ground(player_x,player_y,0,"sprites/menues/mainmenue.png");
